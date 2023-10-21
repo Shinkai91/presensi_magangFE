@@ -1,0 +1,139 @@
+.login-background {
+    background-image: url('../Assets/login_page.jpg');
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Center the .container in the middle of the background */
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 600px;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding-bottom: 30px;
+    border-radius: 6px;
+    position: relative; /* Set the container's position to relative */
+    top: 50%; /* Move the container down by 50% of its height */
+    transform: translateY(-50%); /* Adjust position to center vertically */
+    z-index: 1; /* Ensure the container appears above the background */
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* Input Container Styles */
+.inputs {
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.input img {
+    margin: 0px 30px;
+}
+
+.input input {
+    height: 50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+}
+
+/* Role Selection Styles */
+.role-selection {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+.role-selection label {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.role-selection input[type="radio"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    appearance: none;
+    border: 2px solid #012C3D;
+    border-radius: 50%;
+    outline: none;
+}
+
+/* Style for the radio button when selected */
+.role-selection input[type="radio"]:checked {
+    background-color: #012C3D;
+    border: 2px solid #012C3D;
+}
+
+/* Submit Button Styles */
+.submit-container {
+    display: flex;
+    gap: 30px;
+    margin: 40px auto;
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 440px;
+    height: 48px;
+    color: #fff;
+    background: #012C3D;
+    border-radius: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gray {
+    background: #EAEAEA;
+    color: #676767;
+}
+
+/* Error Styles */
+.error {
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    color: #FF0000; /* Red color for error messages */
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #FFF;
+    border: 2px solid #FF0000;
+    border-radius: 6px;
+    width: 400px; /* Adjust the width as needed */
+}

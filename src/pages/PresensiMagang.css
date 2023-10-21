@@ -1,0 +1,98 @@
+.columns {
+    margin-top: 20px;
+}
+
+/* Style for the heading */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Style for the cards */
+.cards {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    color: white;
+    border-radius: 5px;
+}
+
+.green {
+    background-color: #4CAF50;
+    /* Green */
+}
+
+.red {
+    background-color: #FF5733;
+    /* Red */
+}
+
+/* Style for the table */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+/* Style for table headings */
+thead th {
+    background-color: #f2f2f2;
+}
+
+/* Style for table data rows */
+tbody tr {
+    border-bottom: 1px solid #ccc;
+}
+
+/* Style for buttons in the Actions column */
+.button.is-small {
+    margin-right: 5px;
+}
+
+.button.is-info {
+    background-color: #1E90FF;
+    /* Dodger Blue */
+}
+
+.button.is-danger {
+    background-color: #FF4500;
+    /* Orange Red */
+}
+
+/* Adjust button text color for better visibility */
+.button.is-small {
+    color: white;
+}
+
+/* Hover effect for buttons */
+.button.is-small:hover {
+    opacity: 0.8;
+}
+
+/* Add styles for the new buttons */
+.button-container {
+    margin-top: 20px;
+}
+
+.button.is-success {
+    background-color: #4CAF50;
+    /* Green */
+}
+
+.button.is-success:hover {
+    opacity: 0.8;
+}
+
+.button.is-danger {
+    background-color: #FF5733;
+    /* Red */
+}
+
+.button.is-danger:hover {
+    opacity: 0.8;
+}
