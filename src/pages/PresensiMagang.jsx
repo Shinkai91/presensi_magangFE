@@ -8,7 +8,7 @@ export const Peserta = () => {
   const [totalAttendance, setTotalAttendance] = useState(0);
 
   useEffect(() => {
-    getUsers('http://localhost:3000/admin/presensi'); // Initially, fetch data for all participants
+    getUsers('http://localhost:3000/admin/presensi');
   }, []);
 
   const getUsers = async (endpoint) => {

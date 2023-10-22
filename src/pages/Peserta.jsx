@@ -16,7 +16,6 @@ export const Peserta = () => {
       setUsers(response.data.peserta_magang);
     } catch (error) {
       console.error('Error fetching data:', error);
-      console.error('Response:', error.response);
     }
   };
 

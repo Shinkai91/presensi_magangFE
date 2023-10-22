@@ -1,68 +1,74 @@
-import React, { useState } from 'react';
-import {
-    FaTh,
-    FaBars,
-    FaUserAlt,
-    FaRegChartBar,
-    FaCommentAlt,
-    FaThList
-} from "react-icons/fa";
-import logo from "../../Assets/diskominfo.png";
-import { NavLink } from 'react-router-dom';
-import "../SideBar/Style.css";
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./Style.css";
 
-const Sidebar = ({ children }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const toggle = () => setIsOpen(!isOpen);
-    const menuItem = [
-        {
-            path: "homepage",
-            name: "Homepage",
-            icon: <FaTh />
-        },
-        {
-            path: "peserta",
-            name: "Peserta",
-            icon: <FaUserAlt />
-        },
-        {
-            path: "presensi",
-            name: "Presensi",
-            icon: <FaRegChartBar />
-        },
-        {
-            path: "penugasan",
-            name: "Penugasan",
-            icon: <FaCommentAlt />
-        },
-        {
-            path: "statistik",
-            name: "Statistik",
-            icon: <FaThList />
-        }
-    ];
+function App() {
+    const [showNav, setShowNav] = useState(true);
 
     return (
-        <div className="container">
-            <div style={{ width: isOpen ? "200px" : "50px" }} className="sidebar">
-                <div className="top_section">
-                    <div style={{ display: isOpen ? "block" : "none" }} className="logo">
-                        <img src={logo} alt="Logo" style={{ width: '100px' }} />
+        <div className="body-main">
+            <div className={`body-area${showNav ? " body-pd" : ""}`}>
+                <header className={`header${showNav ? " body-pd" : ""}`}>
+                    <div className="header_toggle">
+                        <i
+                            className={`bi ${showNav ? "bi-x" : "bi-list"}`}
+                            onClick={() => setShowNav(!showNav)}
+                        />
                     </div>
-                    <div style={{ marginLeft: isOpen ? "50px" : "0px" }} className="bars">
-                        <FaBars onClick={toggle} />
+                    <div className="header_img">
+                        <img
+                            src="https://reqres.in/img/faces/5-image.jpg"
+                            alt="Clue Mediator"
+                        />
                     </div>
+                </header>
+                <div className={`l-navbar${showNav ? " show" : ""}`}>
+                    <nav className="nav">
+                        <div>
+                            <a
+                                href="https://cluemediator.com"
+                                target="_blank"
+                                className="nav_logo"
+                            >
+                                <i className="bi bi-alexa nav_logo-icon" />{" "}
+                                <span className="nav_logo-name">Clue Mediator</span>
+                            </a>
+                            <div className="nav_list">
+                                <a
+                                    href="https://cluemediator.com"
+                                    target="_blank"
+                                    className="nav_link"
+                                >
+                                    <i className="bi bi-people nav_icon" />
+                                    <span className="nav_name">Users</span>
+                                </a>
+                                <a
+                                    href="https://cluemediator.com"
+                                    target="_blank"
+                                    className="nav_link"
+                                >
+                                    <i className="bi bi-person-check nav_icon" />
+                                    <span className="nav_name">Role</span>
+                                </a>
+                            </div>
+                        </div>
+                        <a
+                            href="https://cluemediator.com"
+                            target="_blank"
+                            className="nav_link"
+                        >
+                            <i className="bi bi-box-arrow-left nav_icon" />
+                            <span className="nav_name">SignOut</span>
+                        </a>
+                    </nav>
                 </div>
-                {menuItem.map((item, index) => (
-                    <NavLink to={item.path} key={index} className="link" activeClassName="active">
-                        <div className="icon">{item.icon}</div>
-                        <div style={{ display: isOpen ? "block" : "none" }} className="link_text">{item.name}</div>
-                    </NavLink>
-                ))}
+                <div className="pt-4 pb-4">
+                    
+                </div>
             </div>
-            <main>{children}</main>
         </div>
     );
-};
+}
 
-export default Sidebar;
+export default App;

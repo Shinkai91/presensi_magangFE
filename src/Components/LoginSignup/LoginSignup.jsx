@@ -1,64 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import user_icon from "../Assets/person.png";
-import imagelogin from "../../Assets/diskominfo.png";
-import PasswordInput from "./PasswordInput";
-import "../LoginSignup/LoginSignup.css";
+import React from 'react';
+import 'bulma/css/bulma.css';
+import user_icon from '../Assets/person.png';
+import password from '../Assets/password.png';
+import imagelogin from '../../Assets/diskominfo.png';
+import background_login from "../Assets/login_page.jpg";
 
-const LoginSignup = () => {
-  const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState(""); // Default role is "user"
-  const [error, setError] = useState("");
-
-  return (
-    <div className="login-background">
-      <div className="container">
-        <div className="header">
-          <img src={imagelogin} alt="" />
-        </div>
-        <div className="inputs">
-          <div className="input">
-            <img src={user_icon} alt="" />
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <PasswordInput password={password} setPassword={setPassword} />
-        </div>
-        <div className="role-selection">
-          <label>
-            <input
-              type="radio"
-              value="admin"
-              checked={selectedRole === "admin"}
-              onChange={() => setSelectedRole("admin")}
-            />{" "}
-            Admin
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="peserta_magang"
-              checked={selectedRole === "peserta_magang"}
-              onChange={() => setSelectedRole("peserta_magang")}
-            />{" "}
-            Peserta Magang
-          </label>
-        </div>
-        <div className="submit-container">
-          <div className="submit" >
-            Login
-          </div>
-        </div>
-        {error && <div className="error">{error}</div>}
-      </div>
-    </div>
-  );
+const Login = () => {
+    return (
+      <section className="hero is-fullheight" style={{ backgroundImage: `url(${background_login})`, backgroundSize: 'cover' }}>
+            <div className="hero-body">
+                <div className="container">
+                    <div className="columns is-centered">
+                        <div className="column is-4-desktop">
+                            <form className="box">
+                                <img src={imagelogin} alt="" />
+                                <div className="field">
+                                    <label className="label">Username</label>
+                                    <div className="control has-icons-left">
+                                        <input type="text" className="input" placeholder="Username" />
+                                        <span className="icon is-small is-left">
+                                            <img src={user_icon} alt="User Icon" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label className="label">Password</label>
+                                    <div className="control has-icons-left">
+                                        <input type="password" className="input" placeholder="Passowrd" />
+                                        <span className="icon is-small is-left">
+                                            <img src={password} alt="User Icon" />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <button className="button is-success is-fullwidth">Login</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
 }
 
-export default LoginSignup;
+export default Login;
