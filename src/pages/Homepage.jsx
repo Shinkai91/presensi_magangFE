@@ -1,6 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import axios from 'axios'
+import jwt_decode from "jwt-decode"
+import { useNavigate } from 'react-router-dom'
 import imageCon from "../Assets/balaikota.jpg"
 import user from "../Components/Assets/person.png"
+import logo from "../Assets/diskominfo.png"
+// import icon from "../Assets/icon.png"
 import penugasan from "../Assets/image_Buat Penugasan.svg"
 import peserta from "../Assets/image_Peserta magang.svg"
 import statistik from "../Assets/image_Statistik.svg"
@@ -10,8 +15,24 @@ import "../Components/SideBar/Style.css"
 import './Homestyle.css'
 
 const Homepage = () => {
-
+  const [nama, setNama] = useState('');
+  const [token, setToken] = useState('');
   const [showNav, setShowNav] = useState(true);
+
+  useEffect(() => {
+    refreshToken();
+  })
+
+  const refreshToken = async() => {
+    try {
+      const response = await axios.get('http://localhost:3000/account/token');
+      setToken(response.data.token);
+      const decoded = jwt_decode(response.data.token);
+      console.log(decoded);
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <div className="body-main">
@@ -34,35 +55,62 @@ const Homepage = () => {
           <nav className="nav">
             <div>
               <a
-                href="https://cluemediator.com"
-                target="_blank"
+                href="/homepage"
+                target="_self"
                 className="nav_logo"
               >
-                <i className="bi bi-alexa nav_logo-icon" />{" "}
-                <span className="nav_logo-name">Clue Mediator</span>
+                {showNav ? (
+                  <img src={logo} alt="" style={{ width: '150px', height: 'auto' }} />
+                ) : (
+                  <i className="bi bi-border-width nav_logo-icon" />
+                )}
               </a>
               <div className="nav_list">
                 <a
-                  href="https://cluemediator.com"
-                  target="_blank"
+                  href="homepage"
+                  target="_self"
                   className="nav_link"
                 >
-                  <i className="bi bi-people nav_icon" />
-                  <span className="nav_name">Users</span>
+                  <i className="bi bi-house nav_icon" />
+                  <span className="nav_name">Home</span>
                 </a>
                 <a
-                  href="https://cluemediator.com"
-                  target="_blank"
+                  href="peserta"
+                  target="_self"
+                  className="nav_link"
+                >
+                  <i className="bi bi-person nav_icon" />
+                  <span className="nav_name">Peserta</span>
+                </a>
+                <a
+                  href="presensi"
+                  target="_self"
                   className="nav_link"
                 >
                   <i className="bi bi-person-check nav_icon" />
-                  <span className="nav_name">Role</span>
+                  <span className="nav_name">Presensi Magang</span>
+                </a>
+                <a
+                  href="penugasan"
+                  target="_self"
+                  className="nav_link"
+                >
+                  <i className="bi bi-list-task nav_icon" />
+                  <span className="nav_name">Penugasan</span>
+                </a>
+                <a
+                  href="statistik"
+                  target="_self"
+                  className="nav_link"
+                >
+                  <i className="bi bi-bar-chart-line nav_icon" />
+                  <span className="nav_name">Statistik</span>
                 </a>
               </div>
             </div>
             <a
-              href="https://cluemediator.com"
-              target="_blank"
+              href="/"
+              target="_self"
               className="nav_link"
             >
               <i className="bi bi-box-arrow-left nav_icon" />
