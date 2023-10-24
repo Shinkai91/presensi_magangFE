@@ -6,10 +6,12 @@ import logo from "../Assets/diskominfo.png"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
+import axiosJWT from '../config/axiosJWT';
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
+
 
   useEffect(() => {
     getUsers();
@@ -17,7 +19,7 @@ export const Peserta = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/admin/peserta');
+      const response = await axiosJWT.get('http://localhost:3000/admin/peserta');
       setUsers(response.data.peserta_magang);
     } catch (error) {
       console.error('Error fetching data:', error);

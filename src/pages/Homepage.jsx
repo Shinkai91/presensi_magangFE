@@ -13,6 +13,7 @@ import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
 import './Homestyle.css'
+import axiosJWT from '../config/axiosJWT';
 
 const Homepage = () => {
   const [nama, setNama] = useState('');
@@ -43,23 +44,8 @@ const Homepage = () => {
   const Logout = async (e) => {
     e.preventDefault();
     try {
-      await axios.delete('http://localhost:3000/account/logout', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await axiosJWT.delete('http://localhost:3000/account/logout');
       navigate("/");
-    } catch (error) {
-      console.log("Error during logout:", error);
-    }
-  }
-
-  const getPeserta = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get('http://localhost:3000/admin/peserta');
-      console.log(response.data.peserta_magang);
-      navigate("/peserta")
     } catch (error) {
       console.log("Error during logout:", error);
     }
@@ -107,7 +93,6 @@ const Homepage = () => {
                 </a>
                 <a
                   href="peserta"
-                  onClick={getPeserta}
                   target="_self"
                   className="nav_link"
                 >
