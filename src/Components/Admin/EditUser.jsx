@@ -18,7 +18,7 @@ export const EditUser = () => {
 
     useEffect(() => {
         getUserById();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const updateUser = async (e) => {
         e.preventDefault();

@@ -17,20 +17,51 @@ import './Homestyle.css'
 const Homepage = () => {
   const [nama, setNama] = useState('');
   const [token, setToken] = useState('');
+  const [expire, setExpire] = useState('');
+  const navigate = useNavigate();
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
     refreshToken();
   })
 
-  const refreshToken = async() => {
+  const refreshToken = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/account/token');
+      const response = await axios.get('http://localhost:3000/account/token', {
+      });
       setToken(response.data.token);
       const decoded = jwt_decode(response.data.token);
-      console.log(decoded);
+      setNama(decoded.nama);
+      setExpire(decoded.exp);
     } catch (error) {
-      
+      if (error.response) {
+        navigate("/");
+      }
+    }
+  }
+
+  const Logout = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.delete('http://localhost:3000/account/logout', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      navigate("/");
+    } catch (error) {
+      console.log("Error during logout:", error);
+    }
+  }
+
+  const getPeserta = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get('http://localhost:3000/admin/peserta');
+      console.log(response.data.peserta_magang);
+      navigate("/peserta")
+    } catch (error) {
+      console.log("Error during logout:", error);
     }
   }
 
@@ -76,6 +107,7 @@ const Homepage = () => {
                 </a>
                 <a
                   href="peserta"
+                  onClick={getPeserta}
                   target="_self"
                   className="nav_link"
                 >
@@ -110,6 +142,7 @@ const Homepage = () => {
             </div>
             <a
               href="/"
+              onClick={Logout}
               target="_self"
               className="nav_link"
             >
@@ -126,7 +159,7 @@ const Homepage = () => {
             <div className="account-info-container">
               <div className="info-box">
                 <div className="user-info">
-                  <h2>Nama: John Doe</h2>
+                  <h2>Nama: {nama}</h2>
                   <div className="contact-info">
                     <p>Nomor Telepon: 123-456-7890</p>
                     <p>Email: john.doe@example.com</p>

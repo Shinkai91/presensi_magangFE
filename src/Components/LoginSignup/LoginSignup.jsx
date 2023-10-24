@@ -21,6 +21,7 @@ const Login = () => {
                 "username": username,
                 "password": password,
                 "role": role
+            }, {
             })
             navigate('/homepage');
         } catch (error) {
