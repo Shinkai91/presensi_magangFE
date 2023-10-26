@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import "./Peserta.css";
-import logo from "../Assets/diskominfo.png";
-import axiosJWT from "../config/axiosJWT";
-import { Button, Modal, Form } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "../Components/SideBar/Style.css";
+import React, { useState, useEffect } from 'react'
+import './Peserta.css';
+import { Link } from 'react-router-dom';
+import logo from '../Assets/diskominfo.png';
+import axiosJWT from '../config/axiosJWT';
+import {
+  Button,
+  Modal,
+  Form,
+} from 'react-bootstrap';
+import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap-icons/font/bootstrap-icons.css"
+import "../Components/SideBar/Style.css"
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     nama: "",
     asal_univ: "",
@@ -61,30 +64,7 @@ export const Peserta = () => {
       );
       setUsers(response.data.peserta_magang);
     } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const saveUser = async () => {
-    try {
-      await axiosJWT.post("http://localhost:3000/admin/peserta/add", formData);
-      getUsers();
-      handleCloseTaskForm();
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
-  };
-
-  const updateUser = async () => {
-    try {
-      await axiosJWT.patch(
-        `http://localhost:3000/admin/peserta/${id}/edit`,
-        formData
-      );
-      handleCloseTaskForm();
-      getUsers();
-    } catch (error) {
-      console.error("Error updating user:", error);
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -92,6 +72,18 @@ export const Peserta = () => {
     try {
       await axiosJWT.delete(`http://localhost:3000/admin/peserta/${id}/delete`);
       getUsers();
+    } catch (error) {
+      Logout();
+      navigate("/");
+    }
+  };
+
+  const saveUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosJWT.post('http://localhost:3000/admin/peserta/add', formData);
+      getUsers();
+      setShowTaskForm(false);
     } catch (error) {
       console.log(error);
     }

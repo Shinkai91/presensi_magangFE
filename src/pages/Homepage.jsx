@@ -13,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
 import './Homestyle.css'
-import axiosJWT from '../config/axiosJWT';
+
 
 const Homepage = () => {
   const [nama, setNama] = useState('');
@@ -40,15 +40,6 @@ const Homepage = () => {
     }
   }
 
-  const Logout = async (e) => {
-    e.preventDefault();
-    try {
-      await axiosJWT.delete('http://localhost:3000/account/logout');
-      navigate("/");
-    } catch (error) {
-      console.log("Error during logout:", error);
-    }
-  }
 
   return (
     <div className="body-main">
