@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import './Peserta.css'
-import { Link } from 'react-router-dom'
-import logo from "../Assets/diskominfo.png"
-import "bootstrap/dist/css/bootstrap.css"
-import "bootstrap-icons/font/bootstrap-icons.css"
-import "../Components/SideBar/Style.css"
+import React, { useState, useEffect } from 'react';
+import './Peserta.css';
+import { Link } from 'react-router-dom';
+import logo from '../Assets/diskominfo.png';
+import axiosJWT from '../config/axiosJWT';
+import {
+  Button,
+  Modal,
+  Form,
+} from 'react-bootstrap';
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
+  const [formData, setFormData] = useState({
+    nama: '',
+    asal_univ: '',
+    asal_jurusan: '',
+    tanggal_mulai: null, // Use null for date fields
+    tanggal_selesai: null, // Use null for date fields
+    status_aktif: true,
+    username: '',
+    password: '',
+  });
 
   useEffect(() => {
     getUsers();
@@ -17,7 +31,7 @@ export const Peserta = () => {
 
   const getUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/admin/peserta');
+      const response = await axiosJWT.get('http://localhost:3000/admin/peserta');
       setUsers(response.data.peserta_magang);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -26,12 +40,31 @@ export const Peserta = () => {
 
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/admin/peserta/${id}/delete`);
+      await axiosJWT.delete(`http://localhost:3000/admin/peserta/${id}/delete`);
       getUsers();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  const saveUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosJWT.post('http://localhost:3000/admin/peserta/add', formData);
+      getUsers();
+      setShowTaskForm(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCloseTaskForm = () => {
+    setShowTaskForm(false);
+  };
+
+  const handleShowTaskForm = () => {
+    setShowTaskForm(true);
+  };
 
   return (
     <div className="body-main">
@@ -120,7 +153,12 @@ export const Peserta = () => {
         <div className="pt-4 pb-4">
           <div className="columns mt-5">
             <div className="column is-half">
-              <Link to={'/add'} className='button is-success'>Add User</Link>
+              <button
+                onClick={handleShowTaskForm}
+                className='button is-success'
+              >
+                Tambah Peserta
+              </button>
               <table className="custom-table">
                 <thead>
                   <tr>
@@ -156,6 +194,102 @@ export const Peserta = () => {
           </div>
         </div>
       </div>
+
+      <Modal
+        show={showTaskForm}
+        onHide={handleCloseTaskForm}
+        backdrop="static"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Peserta</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={saveUser}>
+            <Form.Group controlId="formTaskTitle">
+              <Form.Label>Nama</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan nama"
+                value={formData.nama}
+                onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formTaskDescription">
+              <Form.Label>Universitas</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan universitas"
+                value={formData.asal_univ}
+                onChange={(e) => setFormData({ ...formData, asal_univ: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Jurusan</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan jurusan"
+                value={formData.asal_jurusan}
+                onChange={(e) => setFormData({ ...formData, asal_jurusan: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Tanggal Mulai</Form.Label>
+              <Form.Control
+                type="date"
+                value={formData.tanggal_mulai}
+                onChange={(e) => setFormData({ ...formData, tanggal_mulai: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formTaskDeadline">
+              <Form.Label>Tanggal Selesai</Form.Label>
+              <Form.Control
+                type="date"
+                value={formData.tanggal_selesai}
+                onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value })}
+              />
+            </Form.Group>
+            <Form.Group controlId="formTaskStatus">
+              <Form.Label>Status Aktif</Form.Label>
+              <Form.Control
+                as="select"
+                value={formData.status_aktif.toString()}
+                onChange={(e) => setFormData({ ...formData, status_aktif: e.target.value === 'true' })}
+              >
+                <option value="true">Aktif</option>
+                <option value="false">Tidak Aktif</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group controlId="formTaskUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan username"
+                value={formData.username}
+                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTaskPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Masukkan password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseTaskForm}>
+            Batal
+          </Button>
+          <Button variant="primary" onClick={saveUser}>
+            Simpan
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

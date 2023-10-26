@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './PresensiMagang.css';
 import { Link } from 'react-router-dom';
 import logo from "../Assets/diskominfo.png"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
+import axiosJWT from '../config/axiosJWT';
 
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
@@ -13,17 +13,23 @@ export const Peserta = () => {
   const [totalAttendance, setTotalAttendance] = useState(0);
 
   useEffect(() => {
-    getUsers('http://localhost:3000/admin/presensi');
+    getUsers();
   }, []);
 
-  const getUsers = async (endpoint) => {
+  const getUsers = async () => {
     try {
-      const response = await axios.get(endpoint);
+      const response = await axiosJWT.get('http://localhost:3000/admin/presensi');
       setUsers(response.data.presensi);
+      setTotalAttendance(response.data.totalSudahPresensi);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-      // Calculate total attendance
-      const totalHadir = response.data.filter((user) => user.check_in !== null).length;
-      setTotalAttendance(totalHadir);
+  const getPresensiBelum = async () => {
+    try {
+      const response = await axiosJWT.get('http://localhost:3000/admin/presensi/negatif');
+      setUsers(response.data.presensi);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -129,13 +135,13 @@ export const Peserta = () => {
         </div>
         <div className="button-container">
           <button
-            onClick={() => getUsers('http://localhost:3000/admin/presensi/negatif')}
+            onClick={() => getPresensiBelum()}
             className="button is-small is-danger"
           >
             Peserta Belum Absen
           </button>
           <button
-            onClick={() => getUsers('http://localhost:3000/admin/presensi')}
+            onClick={() => getUsers()}
             className="button is-small is-success"
           >
             Peserta Sudah Absen
@@ -156,7 +162,7 @@ export const Peserta = () => {
           <tbody>
             {Array.isArray(users) &&
               users.map((user, index) => (
-                <tr key={user.p_id}>
+                <tr key={user.id}>
                   <td>{index + 1}</td>
                   <td>{user.nama}</td>
                   <td>{user.check_in}</td>
@@ -164,7 +170,7 @@ export const Peserta = () => {
                   <td>{user.image_url_in}</td>
                   <td>{user.image_url_out}</td>
                   <td>
-                    <Link to={`/edit/${user.p_id}`} className="button is-small is-info">
+                    <Link to={`/edit/${user.id}`} className="button is-small is-info">
                       Edit
                     </Link>
                   </td>
