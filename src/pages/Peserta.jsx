@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import './Peserta.css'
-import { Link } from 'react-router-dom'
-import logo from "../Assets/diskominfo.png"
+import './Peserta.css';
+import { Link } from 'react-router-dom';
+import logo from '../Assets/diskominfo.png';
+import axiosJWT from '../config/axiosJWT';
+import {
+  Button,
+  Modal,
+  Form,
+} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
@@ -10,6 +15,18 @@ import "../Components/SideBar/Style.css"
 export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
+  const [formData, setFormData] = useState({
+    nama: '',
+    asal_univ: '',
+    asal_jurusan: '',
+    tanggal_mulai: null, // Use null for date fields
+    tanggal_selesai: null, // Use null for date fields
+    status_aktif: true,
+    username: '',
+    password: '',
+  });
 
   useEffect(() => {
     getUsers();
