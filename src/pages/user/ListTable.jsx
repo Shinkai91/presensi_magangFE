@@ -5,14 +5,14 @@ function ListTable(props) {
   const { data } = props;
 
   return (
-    <table>
+    <table className='tabel'>
       <thead>
         <tr>
           <th>Tanggal</th>
           <th>Check-in</th>
           <th>Check-Out</th>
-          <th>image_url_in</th>
-          <th>image_url_out</th>
+          <th>image url in</th>
+          <th>image url out</th>
         </tr>
       </thead>
       <tbody>

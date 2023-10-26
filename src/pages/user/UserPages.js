@@ -28,6 +28,7 @@ const UserPages = () => {
       const response = await axios.get('http://localhost:3000/account/token');
       const decoded = jwt_decode(response.data.token);
       setNama(decoded.nama);
+  
     } catch (error) {
       if (error.response) {
         navigate("/");
@@ -120,7 +121,7 @@ const UserPages = () => {
               <div className="info-box">
                 <div className="user-info">
                   <p>Selamat Datang,</p>
-                  <p>{nama}</p>
+                  <p>{nama} </p>
                 </div>
               </div>
               <div className='space'></div>

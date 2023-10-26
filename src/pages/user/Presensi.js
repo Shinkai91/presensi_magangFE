@@ -41,7 +41,7 @@ const Presensi = () => {
     canvas.height = videoRef.current.videoHeight;
     const context = canvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const capturedImage = canvas.toDataURL('image/png');
+    const capturedImage = canvas.toDataURL('image/jpeg');
     setImageSrc(capturedImage);
     setCaptureTime(new Date());
     console.log('Data Gambar:', capturedImage);
@@ -148,7 +148,7 @@ const Presensi = () => {
           <Container style={{ marginTop: 10, display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
               <video ref={videoRef} autoPlay style={{ width: '50%', height: '60%' }} />
-              {imageSrc && <img src={imageSrc} alt="Selfie" style={{ width: '50%', height: '60%' }} />}
+              {imageSrc && <img src={imageSrc} alt="Selfie" style={{ width: '50%', height: '60%' , marginLeft:"10px" }} />}
             </div>
             <div style={{ display: 'flex', marginTop: 10 }}>
               <button onClick={capture} style={{ height: "40px", width: "100px", borderRadius: "10px" }}>Ambil Foto</button>

@@ -1,38 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import axiosJWT from '../../config/axiosJWT';
 import ListTable from './ListTable';
 import logo from "../../Assets/diskominfo.png"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../../Components/SideBar/Navbar.css"
+import axios from 'axios';
+import jwt_decode from "jwt-decode"
 
 
 function Data(props) {
   const [data, setData] = useState([]);
-  const { id } = useParams();
+  const [Id, setID] = useState([]);
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosJWT.get(`http://localhost:3000/user/presensi/1`);
-        setData(response.data.presensi);
-        const dataWithKosong = response.data.presensi.map((item) => ({
-          ...item,
-          check_in: item.check_in === null ? "Belum absen" : item.check_in,
-          check_out: item.check_out === null ? "Belum absen" : item.check_out,
-          image_url_in: item.image_url_in === null ? "Belum absen" : item.image_url_in,
-          image_url_out: item.image_url_out === null ? "Belum absen" : item.image_url_out,
-        }));
-        setData(dataWithKosong);
+        const ambilid = await axios.get('http://localhost:3000/account/token');
+        const decoded = jwt_decode(ambilid.data.token);
+        setID(decoded.userId);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching id:', error);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, []); // Empty dependency array to run only once after the component mounts
+
+  useEffect(() => {
+    const fetchPresensiData = async () => {
+      try {
+        if (Id) {
+          const response = await axiosJWT.get(`http://localhost:3000/user/presensi/${Id}`);
+          const dataWithKosong = response.data.presensi.map((item) => ({
+            ...item,
+            check_in: item.check_in === null ? "Belum absen" : item.check_in,
+            check_out: item.check_out === null ? "Belum absen" : item.check_out,
+            image_url_in: item.image_url_in === null ? "Belum absen" : item.image_url_in,
+            image_url_out: item.image_url_out === null ? "Belum absen" : item.image_url_out,
+          }));
+          setData(dataWithKosong);
+        }
+      } catch (error) {
+        console.error('Error fetching presensi data:', error);
+      }
+    };
+
+    fetchPresensiData();
+  }, [Id]);
 
   return (
     <div className="body-main">
@@ -114,6 +130,8 @@ function Data(props) {
           <h1>Daftar data Absen</h1>
           <ListTable data={data} />
         </div>
+
+        
       </div>
     </div>
   );

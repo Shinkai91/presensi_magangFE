@@ -1,42 +1,46 @@
-import React, { useState } from 'react'
-import CardList from '../../Components/User/CardList';
+import React, { useEffect, useState } from 'react';
+import Cards from '../../Assets/Cards';
 import Dates from '../../Assets/Date';
 import logo from "../../Assets/diskominfo.png"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../../Components/SideBar/Navbar.css"
-
+import './Tugas.css'; // Import file CSS terpisah untuk mengatur layout
+import jwt_decode from "jwt-decode"
+import axiosJWT from '../../config/axiosJWT';
+import axios from 'axios';
 
 function Tugas() {
   const [showNav, setShowNav] = useState(true);
-  const cardData = [
-    {
-      title: 'Card 1',
-      description: 'Description for Card 1',
-      deadline: 'Deadline : 1 November 2023'
-    },
-    {
-      title: 'Card 1',
-      description: 'Description for Card 1',
-      deadline: 'Deadline : 1 November 2023'
-    },
-    {
-      title: 'Card 1',
-      description: 'Description for Card 1',
-      deadline: 'Deadline : 1 November 2023'
-    },
-    {
-      title: 'Card 1',
-      description: 'Description for Card 1',
-      deadline: 'Deadline : 1 November 2023'
-    },
-    {
-      title: 'Card 1',
-      description: 'Description for Card 1',
-      deadline: 'Deadline : 1 November 2023'
-    },
-    // Tambahkan data kartu lainnya sesuai kebutuhan
-  ];
+  const [cardData, setData] = useState([]);
+  const [id, setID] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const ambilid = await axios.get('http://localhost:3000/account/token');
+        const decoded = jwt_decode(ambilid.data.token);
+        setID(decoded.userId);
+      } catch (error) {
+        console.error('Error fetching id:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosJWT.get(`http://localhost:3000/user/tugas-list/${id}`);
+        setData(response.data.stugas);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   return (
     <div className="body-main">
@@ -71,7 +75,7 @@ function Tugas() {
               </a>
               <div className="nav_list">
                 <a
-                  href="/user/homepage"
+                  href="homepage"
                   target="_self"
                   className="nav_link"
                 >
@@ -79,7 +83,7 @@ function Tugas() {
                   <span className="nav_name">Home</span>
                 </a>
                 <a
-                  href="/user/presensi/riwayat"
+                  href="presensi/riwayat"
                   target="_self"
                   className="nav_link"
                 >
@@ -87,7 +91,7 @@ function Tugas() {
                   <span className="nav_name">History Presensi</span>
                 </a>
                 <a
-                  href="/user/presensi"
+                  href="presensi"
                   target="_self"
                   className="nav_link"
                 >
@@ -95,7 +99,7 @@ function Tugas() {
                   <span className="nav_name">Lakukan Presensi</span>
                 </a>
                 <a
-                  href="/user/tugas"
+                  href="tugas"
                   target="_self"
                   className="nav_link"
                 >
@@ -117,11 +121,15 @@ function Tugas() {
         <div className="App">
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }} > <Dates /> </div>
           <h1 style={{ marginBottom: "16px" }} >Tugas</h1>
-          <CardList cardData={cardData} />
+          <div className="card-list">
+            {cardData.map((card, data) => (
+              <Cards key={data.id} data={card} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default Tugas
+export default Tugas;
