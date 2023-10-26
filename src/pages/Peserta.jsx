@@ -1,8 +1,9 @@
+import axiosJWT from '../config/axiosJWT';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react'
 import './Peserta.css';
 import { Link } from 'react-router-dom';
 import logo from '../Assets/diskominfo.png';
-import axiosJWT from '../config/axiosJWT';
 import {
   Button,
   Modal,
@@ -16,6 +17,7 @@ export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     nama: '',
@@ -37,7 +39,8 @@ export const Peserta = () => {
       const response = await axiosJWT.get('http://localhost:3000/admin/peserta');
       setUsers(response.data.peserta_magang);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      Logout();
+      navigate("/");
     }
   };
 
@@ -46,7 +49,8 @@ export const Peserta = () => {
       await axiosJWT.delete(`http://localhost:3000/admin/peserta/${id}/delete`);
       getUsers();
     } catch (error) {
-      console.log(error);
+      Logout();
+      navigate("/");
     }
   };
 
@@ -57,9 +61,19 @@ export const Peserta = () => {
       getUsers();
       setShowTaskForm(false);
     } catch (error) {
-      console.log(error);
+      Logout();
+      navigate("/");
     }
   };
+
+  const Logout = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosJWT.delete('http://localhost:3000/account/logout');
+    } catch (error) {
+      console.log("Error during logout:", error);
+    }
+  }  
 
   const handleCloseTaskForm = () => {
     setShowTaskForm(false);
