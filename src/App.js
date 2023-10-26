@@ -5,7 +5,6 @@ import Peserta from './pages/Peserta';
 import PresensiMagang from './pages/PresensiMagang';
 import Penugasan from './pages/Penugasan';
 import Statistik from './pages/Statistik';
-import AddUser from './Components/Admin/AddUser';
 import EditUser from './Components/Admin/EditUser';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
 
@@ -19,7 +18,6 @@ const App = () => {
         <Route path='presensi' element={<PresensiMagang />}/>
         <Route path='penugasan' element={<Penugasan />}/>
         <Route path='statistik' element={<Statistik />}/>
-        <Route path='/add' element={<AddUser />}/>
         <Route path='/edit' element={<EditUser />}/>
       </Routes>
     </BrowserRouter>

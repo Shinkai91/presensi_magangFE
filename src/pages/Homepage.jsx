@@ -63,7 +63,7 @@ const Homepage = () => {
           <div className="header_img">
             <img
               src="https://reqres.in/img/faces/5-image.jpg"
-              alt="Clue Mediator"
+              alt=""
             />
           </div>
         </header>
