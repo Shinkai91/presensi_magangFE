@@ -1,4 +1,3 @@
-// axiosJWT.js
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 
@@ -27,6 +26,5 @@ const Logout = async () => {
     console.log("Error during logout:", error);
   }
 }
-
 
 export default axiosJWT;

@@ -40,6 +40,16 @@ const Homepage = () => {
     }
   }
 
+  const Logout = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosJWT.delete('http://localhost:3000/account/logout');
+      navigate("/");
+    } catch (error) {
+      console.log("Error during logout:", error);
+    }
+  }
+
   return (
     <div className="body-main">
       <div className={`body-area${showNav ? " body-pd" : ""}`}>
