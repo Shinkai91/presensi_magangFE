@@ -17,8 +17,6 @@ import './Homestyle.css'
 
 const Homepage = () => {
   const [nama, setNama] = useState('');
-  const [token, setToken] = useState('');
-  const [expire, setExpire] = useState('');
   const navigate = useNavigate();
   const [showNav, setShowNav] = useState(true);
 
@@ -29,10 +27,8 @@ const Homepage = () => {
   const refreshToken = async () => {
     try {
       const response = await axios.get('http://localhost:3000/account/token');
-      setToken(response.data.token);
       const decoded = jwt_decode(response.data.token);
       setNama(decoded.nama);
-      setExpire(decoded.exp);
     } catch (error) {
       if (error.response) {
         navigate("/");

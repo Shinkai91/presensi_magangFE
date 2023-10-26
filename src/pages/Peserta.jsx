@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate} from 'react-router-dom';
 import './Peserta.css';
-import { Link } from 'react-router-dom';
 import logo from '../Assets/diskominfo.png';
 import axiosJWT from '../config/axiosJWT';
 import {
@@ -16,6 +16,9 @@ export const Peserta = () => {
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   const [formData, setFormData] = useState({
     nama: "",
@@ -47,6 +50,7 @@ export const Peserta = () => {
       setShowTaskForm(true);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      navigate("/");
     }
   };
 
@@ -55,7 +59,8 @@ export const Peserta = () => {
     if (id) {
       getUserById();
     }
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const getUsers = async () => {
     try {
@@ -65,6 +70,18 @@ export const Peserta = () => {
       setUsers(response.data.peserta_magang);
     } catch (error) {
       console.error('Error fetching data:', error);
+      navigate("/");
+    }
+  };
+
+  const updateUser = async () => {
+    try {
+      await axiosJWT.patch(`http://localhost:3000/admin/peserta/${id}/edit`, formData);
+      handleCloseTaskForm();
+      getUsers();
+    } catch (error) {
+      console.error('Error updating user:', error);
+      navigate("/");
     }
   };
 
@@ -73,7 +90,6 @@ export const Peserta = () => {
       await axiosJWT.delete(`http://localhost:3000/admin/peserta/${id}/delete`);
       getUsers();
     } catch (error) {
-      Logout();
       navigate("/");
     }
   };
@@ -86,6 +102,7 @@ export const Peserta = () => {
       setShowTaskForm(false);
     } catch (error) {
       console.log(error);
+      navigate("/");
     }
   };
 
