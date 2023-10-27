@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosJWT from '../../config/axiosJWT';
-import ListTable from './ListTable';
+import ListTable from '../../Components/User/ListTable';
 
 
 function Data(props) {
