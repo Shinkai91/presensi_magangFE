@@ -3,7 +3,6 @@ import axios from 'axios'
 import jwt_decode from "jwt-decode"
 import { useNavigate } from 'react-router-dom'
 import imageCon from "../Assets/balaikota.jpg"
-import user from "../Components/Assets/person.png"
 import logo from "../Assets/diskominfo.png"
 // import icon from "../Assets/icon.png"
 import penugasan from "../Assets/image_Buat Penugasan.svg"
@@ -124,21 +123,18 @@ const Homepage = () => {
         <div className="pt-4 pb-4">
           <div className="homepage-container">
             <div className="image-container">
-              <img src={imageCon} alt='' />
+              <img className="background-home" src={imageCon} alt='' />
             </div>
             <div className="account-info-container">
               <div className="info-box">
                 <div className="user-info">
-                  <h2>Nama: {nama}</h2>
-                  <div className="contact-info">
-                    <p>Nomor Telepon: 123-456-7890</p>
-                    <p>Email: john.doe@example.com</p>
-                  </div>
+                  <p>Selamat Datang,</p>
+                  <p>{nama}</p>
                 </div>
               </div>
               <div className='space'></div>
               <div className="user-image">
-                <img src={user} alt="" />
+                <img src="https://reqres.in/img/faces/5-image.jpg" alt="" />
               </div>
             </div>
             <div className="action-buttons">

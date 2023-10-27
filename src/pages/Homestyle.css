@@ -1,40 +1,52 @@
 .homepage-container {
   width: 100%;
-  margin: 0; 
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
 .image-container {
   margin-bottom: 20px;
-  text-align: center;
+  width: 100%;
+  min-height: 200px;
 }
 
-.image-container img {
-  max-width: 100%; 
-  height: auto; 
+.background-home {
+  width: 100%;
+  height: auto;
   border-radius: 6px;
-  display: block; 
-  margin: 0 auto; 
+  display: block;
+  margin: 0 auto;
 }
 
 .account-info-container {
-  display: flex; /* Menyusun secara row */
+  width: 100%;
+  display: flex;
   align-items: center;
-  justify-content: space-between; /* Membuat info-box dan user-image berada di sisi berlawanan */
-  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.user-info p {
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-image {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden
+}
+
+.user-image img {
+  width: 105px
 }
 
 .info-box {
   display: flex;
-  flex-direction: column; /* Menyusun info-box dalam satu kolom */
-  text-align: left; /* Pusatkan teks horizontalnya ke start */
-}
-
-.contact-info {
-  margin-top: 10px; /* Berikan jarak antara nomor telepon dan email */
+  flex-direction: column;
   text-align: left;
 }
 
@@ -42,11 +54,11 @@
   padding-left: 500px;
 }
 
-/* CSS untuk action buttons dan teksnya */
 .action-buttons {
+  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 20px; /* Berikan jarak dari elemen di atasnya */
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 .action-buttons a {
@@ -54,19 +66,19 @@
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  margin-right: 20px; /* Berikan jarak antara setiap tombol */
-  color: #333; /* Warna teks */
+  margin-right: 20px;
+  color: #333;
 }
 
 .action-buttons img {
-  width: 200px; /* Kembalikan ukuran gambar ke aslinya */
+  width: 200px;
   height: auto;
 }
 
 .action-buttons span {
-  margin-top: 10px; /* Berikan jarak antara teks dan gambar */
-  font-size: 16px; /* Ukuran teks */
+  margin-top: 10px;
+  font-size: 16px;
   text-align: center;
-  font-family: 'Poppins', sans-serif; /* Menggunakan font Poppins */
-  font-weight: bold; /* Mengatur font-weight menjadi bold */
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
 }
