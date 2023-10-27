@@ -69,14 +69,14 @@ const UserPages = () => {
               </a>
               <div className="nav_list">
                 <a
-                  href="user/homepage"
+                  href="homepage"
                   className="nav_link"
                 >
                   <i className="bi bi-house nav_icon" />
                   <span className="nav_name">Home</span>
                 </a>
                 <a
-                  href="user/presensi/riwayat"
+                  href="presensi/riwayat"
                   target="_self"
                   className="nav_link"
                 >
@@ -84,7 +84,7 @@ const UserPages = () => {
                   <span className="nav_name">History Presensi</span>
                 </a>
                 <a
-                  href="user/presensi"
+                  href="presensi"
                   target="_self"
                   className="nav_link"
                 >
@@ -92,7 +92,7 @@ const UserPages = () => {
                   <span className="nav_name">Lakukan Presensi</span>
                 </a>
                 <a
-                  href="user/tugas"
+                  href="tugas"
                   target="_self"
                   className="nav_link"
                 >
