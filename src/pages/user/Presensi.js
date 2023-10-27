@@ -87,7 +87,7 @@ const Presensi = () => {
           <nav className="nav">
             <div>
               <a
-                href="/userpage"
+                href="/user/homepage"
                 target="_self"
                 className="nav_logo"
               >
@@ -99,7 +99,7 @@ const Presensi = () => {
               </a>
               <div className="nav_list">
                 <a
-                  href="userpage"
+                  href="homepage"
                   target="_self"
                   className="nav_link"
                 >
@@ -107,7 +107,7 @@ const Presensi = () => {
                   <span className="nav_name">Home</span>
                 </a>
                 <a
-                  href="data"
+                  href="presensi/riwayat"
                   target="_self"
                   className="nav_link"
                 >
