@@ -7,12 +7,14 @@ import Penugasan from './pages/Penugasan';
 import Statistik from './pages/Statistik';
 import EditUser from './Components/Admin/EditUser';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
+import Data from './pages/user/Data'
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<LoginSignup />}/>
+        <Route path="riwayat" element={<Data/>}/>
         <Route path="homepage" element={<Homepage />}/>
         <Route path='peserta' element={<Peserta />}/>
         <Route path='presensi' element={<PresensiMagang />}/>
