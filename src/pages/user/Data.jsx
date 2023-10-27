@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosJWT from '../../config/axiosJWT';
-import ListTable from '../../Components/User/ListTable';
+import ListTable from './ListTable';
 
 
 function Data(props) {
@@ -11,7 +11,7 @@ function Data(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosJWT.get(`http://localhost:3000/user/presensi/${id}`);
+        const response = await axiosJWT.get(`http://localhost:3000/user/presensi/1`);
         setData(response.data.presensi);
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,

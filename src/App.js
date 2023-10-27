@@ -8,18 +8,24 @@ import Statistik from './pages/Statistik';
 import EditUser from './Components/Admin/EditUser';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
 import Data from './pages/user/Data'
+import Presensi from './pages/user/Presensi';
+import Tugas from './pages/user/Tugas';
+import UserPages from './pages/user/UserPages';
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<LoginSignup />}/>
-        <Route path="riwayat" element={<Data/>}/>
+        <Route path="user/presensi/riwayat" element={<Data/>}/>
+        <Route path="user/presensi" element={<Presensi/>}/>
+        <Route path="user/tugas" element={<Tugas/>}/>
+        <Route path="user/homepage" element={<UserPages />}/>
         <Route path="homepage" element={<Homepage />}/>
-        <Route path='peserta' element={<Peserta />}/>
-        <Route path='presensi' element={<PresensiMagang />}/>
-        <Route path='penugasan' element={<Penugasan />}/>
-        <Route path='statistik' element={<Statistik />}/>
+        <Route path='admin/peserta' element={<Peserta />}/>
+        <Route path='admin/presensi' element={<PresensiMagang />}/>
+        <Route path='admin/penugasan' element={<Penugasan />}/>
+        <Route path='admin/statistik' element={<Statistik />}/>
         <Route path='/edit' element={<EditUser />}/>
       </Routes>
     </BrowserRouter>

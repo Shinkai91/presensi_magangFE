@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react"
 import axios from 'axios'
 import jwt_decode from "jwt-decode"
 import { useNavigate } from 'react-router-dom'
-import imageCon from "../Assets/balaikota.jpg"
-import logo from "../Assets/diskominfo.png"
+import imageCon from "../../Assets/balaikota.jpg"
+import logo from "../../Assets/diskominfo.png"
 // import icon from "../Assets/icon.png"
-import penugasan from "../Assets/image_Penugasan.svg"
-import data from "../Assets/image_Data Presensi.svg"
-import presensi from "../Assets/image_Lakukan Presensi.svg"
+import penugasan from "../../Assets/image_Penugasan.svg"
+import data from "../../Assets/image_Data Presensi.svg"
+import presensi from "../../Assets/image_Lakukan Presensi.svg"
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
-import "../components/Navigasi/Navbar.css"
+import "../../Components/SideBar/Navbar.css"
 import './UserPages.css'
 
 
@@ -57,7 +57,7 @@ const UserPages = () => {
           <nav className="nav">
             <div>
               <a
-                href="/userpage"
+                href="/user/homepage"
                 target="_self"
                 className="nav_logo"
               >
@@ -69,15 +69,14 @@ const UserPages = () => {
               </a>
               <div className="nav_list">
                 <a
-                  href="userpage"
-                  target="_self"
+                  href="user/homepage"
                   className="nav_link"
                 >
                   <i className="bi bi-house nav_icon" />
                   <span className="nav_name">Home</span>
                 </a>
                 <a
-                  href="data"
+                  href="user/presensi/riwayat"
                   target="_self"
                   className="nav_link"
                 >
@@ -85,7 +84,7 @@ const UserPages = () => {
                   <span className="nav_name">History Presensi</span>
                 </a>
                 <a
-                  href="presensi"
+                  href="user/presensi"
                   target="_self"
                   className="nav_link"
                 >
@@ -93,7 +92,7 @@ const UserPages = () => {
                   <span className="nav_name">Lakukan Presensi</span>
                 </a>
                 <a
-                  href="tugas"
+                  href="user/tugas"
                   target="_self"
                   className="nav_link"
                 >

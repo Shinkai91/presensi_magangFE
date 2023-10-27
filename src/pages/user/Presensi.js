@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import logo from "../Assets/diskominfo.png"
+import logo from "../../Assets/diskominfo.png"
 import { Container } from 'react-bootstrap';
-import Dates from '../Assets/Date';
+import Dates from '../../Assets/Date';
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
-import "../components/Navigasi/Navbar.css"
+import "../../Components/SideBar/Navbar.css"
 
 const Presensi = () => {
   const videoRef = useRef(null);
