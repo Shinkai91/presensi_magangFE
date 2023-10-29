@@ -51,7 +51,7 @@ const Login = () => {
                     <div className="columns is-centered">
                         <div className="column is-4-desktop">
                             <form onSubmit={Auth} className="box">
-                                <p className='has-text-centered'>{message}</p>
+                                <p className='has-text-centered' style={{ color: "red", fontFamily: "Poppins, sans-serif" }}>{message}</p>
                                 <img src={imagelogin} alt="" />
                                 <div className="field">
                                     <label className="label">Username</label>
