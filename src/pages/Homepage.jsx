@@ -76,6 +76,10 @@ const Homepage = () => {
                   <i className="bi bi-house nav_icon" />
                   <span className="nav_name">Home</span>
                 </a>
+                <a href="admin" target="_self" className="nav_link">
+                  <i className="bi bi-person-check nav_icon" />
+                  <span className="nav_name">Admin</span>
+                </a>
                 <a
                   href="peserta"
                   target="_self"
@@ -128,8 +132,8 @@ const Homepage = () => {
             <div className="account-info-container">
               <div className="info-box">
                 <div className="user-info">
-                  <p>Selamat Datang,</p>
-                  <p>{nama}</p>
+                  <p className="user-info-1">Selamat Datang,</p>
+                  <p className="user-info-1">{nama}</p>
                 </div>
               </div>
               <div className='space'></div>
@@ -139,15 +143,23 @@ const Homepage = () => {
             </div>
             <div className="action-buttons">
               <a href="/peserta">
-                <img src={peserta} alt="Peserta" />
+                <img src={peserta} alt="" />
+              </a>
+              <a href="/penugasan">
+                <img src={penugasan} alt="" />
+              </a>
+              <a href="/statistik">
+                <img src={statistik} alt="" />
+              </a>
+            </div>
+            <div className="action-buttons-1">
+              <a href="/peserta">
                 <span>Peserta</span>
               </a>
               <a href="/penugasan">
-                <img src={penugasan} alt="Penugasan" />
                 <span>Penugasan</span>
               </a>
               <a href="/statistik">
-                <img src={statistik} alt="Statistik" />
                 <span>Statistik</span>
               </a>
             </div>

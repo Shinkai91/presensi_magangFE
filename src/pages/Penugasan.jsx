@@ -1,21 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import logo from "../Assets/diskominfo.png";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../Components/SideBar/Style.css";
 import "./Penugasan.css";
+import axiosJWT from "../config/axiosJWT";
 
 function Penugasan() {
   const [showNav, setShowNav] = useState(true);
-  const [activeTasks, setActiveTasks] = useState(5);
+  const [activeTasks, setActiveTasks] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeNow, setTimeNow] = useState('');
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [tugas, setTugas] = useState([]);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    judul: "",
+    tugas_url: "",
+    dueDate: "",
+  });
 
   useEffect(() => {
+    getTugasById();
+    getTugas();
+    fetchCurrentTime();
+
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -23,7 +35,81 @@ function Penugasan() {
     return () => {
       clearInterval(timer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const activeTaskCount = tugas.filter((tugas) => {
+      const dueDate = new Date(tugas.dueDate);
+      return dueDate > currentTime;
+    }).length;
+    setActiveTasks(activeTaskCount);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime]);
+
+  const fetchCurrentTime = async () => {
+    try {
+      const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Jakarta');
+      const data = await response.json();
+      const dateTimeString = data.datetime;
+      const dateTime = new Date(dateTimeString);
+
+      const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+      const date = dateTime.toLocaleDateString(undefined, dateOptions);
+      const time = dateTime.toLocaleTimeString(undefined, timeOptions);
+
+      const dateTimeStringFormatted = `${date} - ${time}`;
+      setTimeNow(dateTimeStringFormatted);
+    } catch (error) {
+      console.error('Error fetching current time:', error);
+    }
+  };
+
+  function formatDueDate(inputDate) {
+    const date = new Date(inputDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  const addTugas = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosJWT.post("http://localhost:3000/admin/tugas/add", formData);
+      getTugas();
+      setShowTaskForm(false);
+    } catch (error) {
+      navigate("/");
+    }
+  };
+
+  const getTugas = async () => {
+    try {
+      const response = await axiosJWT.get("http://localhost:3000/admin/tugas");
+      setTugas(response.data.tugas);
+    } catch (error) {
+      navigate("/");
+    }
+  };
+
+  const [statustugas, setStatusTugas] = useState([]);
+
+  const getTugasById = async (taskId) => {
+    try {
+      const response = await axiosJWT.get(
+        `http://localhost:3000/admin/tugas/${taskId}`
+      );
+      setStatusTugas(response.data.tugas);
+    } catch (error) {
+      // Handle errors
+    }
+  };
 
   const handleShowTaskForm = () => {
     setShowTaskForm(true);
@@ -31,12 +117,6 @@ function Penugasan() {
 
   const handleCloseTaskForm = () => {
     setShowTaskForm(false);
-  };
-
-  const handleSaveTask = () => {
-    // Simpan data form ke server atau lakukan aksi lainnya
-    // Setelah berhasil, Anda bisa menutup form dengan handleCloseTaskForm
-    handleCloseTaskForm();
   };
 
   return (
@@ -59,65 +139,45 @@ function Penugasan() {
         <div className={`l-navbar${showNav ? " show" : ""}`}>
           <nav className="nav">
             <div>
-              <a
-                href="/homepage"
-                target="_self"
-                className="nav_logo"
-              >
+              <a href="/homepage" target="_self" className="nav_logo">
                 {showNav ? (
-                  <img src={logo} alt="" style={{ width: "150px", height: "auto" }} />
+                  <img
+                    src={logo}
+                    alt=""
+                    style={{ width: "150px", height: "auto" }}
+                  />
                 ) : (
                   <i className="bi bi-border-width nav_logo-icon" />
                 )}
               </a>
               <div className="nav_list">
-                <a
-                  href="homepage"
-                  target="_self"
-                  className="nav_link"
-                >
+                <a href="homepage" target="_self" className="nav_link">
                   <i className="bi bi-house nav_icon" />
                   <span className="nav_name">Home</span>
                 </a>
-                <a
-                  href="peserta"
-                  target="_self"
-                  className="nav_link"
-                >
+                <a href="admin" target="_self" className="nav_link">
+                  <i className="bi bi-person-check-fill nav_icon" />
+                  <span className="nav_name">Admin</span>
+                </a>
+                <a href="peserta" target="_self" className="nav_link">
                   <i className="bi bi-person nav_icon" />
                   <span className="nav_name">Peserta</span>
                 </a>
-                <a
-                  href="presensi"
-                  target="_self"
-                  className="nav_link"
-                >
+                <a href="presensi" target="_self" className="nav_link">
                   <i className="bi bi-person-check nav_icon" />
                   <span className="nav_name">Presensi Magang</span>
                 </a>
-                <a
-                  href="penugasan"
-                  target="_self"
-                  className="nav_link"
-                >
+                <a href="penugasan" target="_self" className="nav_link">
                   <i className="bi bi-list-task nav_icon" />
                   <span className="nav_name">Penugasan</span>
                 </a>
-                <a
-                  href="statistik"
-                  target="_self"
-                  className="nav_link"
-                >
+                <a href="statistik" target="_self" className="nav_link">
                   <i className="bi bi-bar-chart-line nav_icon" />
                   <span className="nav_name">Statistik</span>
                 </a>
               </div>
             </div>
-            <a
-              href="/"
-              target="_blank"
-              className="nav_link"
-            >
+            <a href="/" target="_self" className="nav_link">
               <i className="bi bi-box-arrow-left nav_icon" />
               <span className="nav_name">SignOut</span>
             </a>
@@ -126,56 +186,103 @@ function Penugasan() {
         <div className="pt-1 pb-4">
           <div className="body-penugasan">
             <section id="penugasan">
-              <p className="title-penugasan">Penugasan</p>
+              <p
+                style={{
+                  textAlign: "start",
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: 25,
+                  marginBottom: 20,
+                  color: "black"
+                }}
+              >
+                Penugasan
+              </p>
+              <div className="card" style={{ backgroundColor: "red" }}>
+                <p style={{ color: "white" }}>Tanggal Hari Ini</p>
+                <p style={{ color: "white" }}>{timeNow}</p>
+              </div>
             </section>
             <section id="cards-penugasan">
               <div className="card-penugasan-1 green-penugasan">
                 <p>Jumlah Tugas Aktif: {activeTasks}</p>
               </div>
-              <div className="card-penugasan-1 red-penugasan" style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                className="card-penugasan-1 red-penugasan"
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <button
                   onClick={handleShowTaskForm}
                   style={{
-                    backgroundColor: 'red',
-                    border: 'none',
-                    color: 'white',
+                    backgroundColor: "red",
+                    border: "none",
+                    color: "white",
                   }}
                 >
                   Tambah Tugas
                 </button>
               </div>
-              <div className="card-penugasan-2 green-penugasan-2">
-                <p id="date-time">{currentTime.toLocaleString()}</p>
-              </div>
             </section>
             <section id="informasi-penugasan">
               <div className="container-penugasan left">
-                <h2>Informasi Tugas Aktif</h2>
-                <ul>
-                  <li>Tugas 1</li>
-                  <li>Tugas 2</li>
-                  <li>Tugas 3</li>
-                  {/* Tambahkan lebih banyak item sesuai kebutuhan */}
-                </ul>
+                <p style={{ textAlign: "center", fontFamily: "Poppins, sans-serif", fontSize: 20, color: "black", marginBottom: 10 }}>
+                  Daftar Tugas
+                </p>
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Judul</th>
+                      <th>Deskripsi</th>
+                      <th>Deadline</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tugas.map((tugas, index) => (
+                      <tr key={tugas.id}>
+                        <td>{index + 1}</td>
+                        <td>{tugas.judul}</td>
+                        <td>{tugas.tugas_url}</td>
+                        <td>{formatDueDate(tugas.dueDate)}</td>
+                        <td>
+                          <button
+                            onClick={() => getTugasById(tugas.id)}
+                            className="button is-small is-danger"
+                          >
+                            Detail
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
               <div className="container-penugasan right">
-                <h2>Detail Penugasan</h2>
-                <div>
-                  <h3>Siswa yang sudah mengisi:</h3>
-                  <ul>
-                    <li>Siswa 1</li>
-                    <li>Siswa 2</li>
-                    {/* Tambahkan lebih banyak item sesuai kebutuhan */}
-                  </ul>
-                </div>
-                <div>
-                  <h3>Siswa yang belum mengisi:</h3>
-                  <ul>
-                    <li>Siswa 3</li>
-                    <li>Siswa 4</li>
-                    {/* Tambahkan lebih banyak item sesuai kebutuhan */}
-                  </ul>
-                </div>
+                <p style={{ textAlign: "center", fontFamily: "Poppins, sans-serif", fontSize: 20, color: "black", marginBottom: 10 }}>
+                  Detail Penugasan
+                </p>
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th>Tugas URL</th>
+                      <th>Status Pengerjaan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {statustugas.map((tugas, index) => (
+                      <tr key={tugas.id}>
+                        <td>{tugas.nama}</td>
+                        <td>{tugas.status_tugas[0].tugas_url || "N/A"}</td>
+                        <td>
+                          {tugas.status_tugas[0].status_pengerjaan
+                            ? "Sudah Selesai"
+                            : "Belum Selesai"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </section>
           </div>
@@ -192,32 +299,42 @@ function Penugasan() {
           <Modal.Title>Form Penugasan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group controlId="formTaskTitle">
+          <Form onSubmit={addTugas}>
+            <Form.Group controlId="formTaskJudul">
               <Form.Label>Judul</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Masukkan judul"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={formData.judul}
+                onChange={(e) =>
+                  setFormData({ ...formData, judul: e.target.value })
+                }
               />
             </Form.Group>
-            <Form.Group controlId="formTaskDescription">
+            <Form.Group controlId="formTaskDeskripsi">
               <Form.Label>Deskripsi</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 placeholder="Masukkan deskripsi"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={formData.tugas_url}
+                onChange={(e) =>
+                  setFormData({ ...formData, tugas_url: e.target.value })
+                }
               />
             </Form.Group>
-            <Form.Group controlId="formTaskDeadline">
+            <Form.Group controlId="formTaskDueDate">
               <Form.Label>Deadline</Form.Label>
               <Form.Control
-                type="date"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
+                type="datetime-local"
+                value={formData.dueDate ? formData.dueDate.slice(0, 16) : ""}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const selectedDate = new Date(e.target.value);
+                    const isoDate = selectedDate.toISOString();
+                    setFormData({ ...formData, dueDate: isoDate });
+                  }
+                }}
               />
             </Form.Group>
           </Form>
@@ -226,7 +343,7 @@ function Penugasan() {
           <Button variant="secondary" onClick={handleCloseTaskForm}>
             Batal
           </Button>
-          <Button variant="primary" onClick={handleSaveTask}>
+          <Button variant="primary" onClick={addTugas}>
             Simpan
           </Button>
         </Modal.Footer>

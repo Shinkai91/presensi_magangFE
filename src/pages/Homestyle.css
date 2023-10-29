@@ -27,8 +27,9 @@
   justify-content: space-between;
 }
 
-.user-info p {
+.user-info-1 {
   font-family: 'Poppins', sans-serif;
+  color: black;
 }
 
 .user-image {
@@ -54,14 +55,14 @@
   padding-left: 500px;
 }
 
-.action-buttons {
+.action-buttons, .action-buttons-1 {
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
-.action-buttons a {
+.action-buttons-1 a {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,7 +76,7 @@
   height: auto;
 }
 
-.action-buttons span {
+.action-buttons-1 span {
   margin-top: 10px;
   font-size: 16px;
   text-align: center;

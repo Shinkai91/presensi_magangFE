@@ -12,18 +12,52 @@ export const Peserta = () => {
   const [showNav, setShowNav] = useState(true);
   const [totalAttendance, setTotalAttendance] = useState(0);
 
+  const [currentTime, setCurrentTime] = useState('');
+  const [searchDate, setSearchDate] = useState('');
+
   useEffect(() => {
     getUsers();
+    fetchCurrentTime();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getUsers = async () => {
+  const fetchCurrentTime = async () => {
     try {
-      const response = await axiosJWT.get('http://localhost:3000/admin/presensi');
+      const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Jakarta');
+      const data = await response.json();
+      const dateTimeString = data.datetime;
+      const dateTime = new Date(dateTimeString);
+
+      const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      const timeOptions = { hour: '2-digit', minute: '2-digit' };
+
+      const date = dateTime.toLocaleDateString(undefined, dateOptions);
+      const time = dateTime.toLocaleTimeString(undefined, timeOptions);
+
+      const dateTimeStringFormatted = `${date} - ${time}`;
+      setCurrentTime(dateTimeStringFormatted);
+    } catch (error) {
+      console.error('Error fetching current time:', error);
+    }
+  };
+
+
+  const getUsers = async () => {
+    const url = searchDate
+      ? `http://localhost:3000/admin/presensi?tanggal=${searchDate}`
+      : 'http://localhost:3000/admin/presensi';
+
+    try {
+      const response = await axiosJWT.get(url);
       setUsers(response.data.presensi);
       setTotalAttendance(response.data.totalSudahPresensi);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+  };
+
+  const handleSearch = () => {
+    getUsers();
   };
 
   const getPresensiBelum = async () => {
@@ -75,6 +109,10 @@ export const Peserta = () => {
                   <i className="bi bi-house nav_icon" />
                   <span className="nav_name">Home</span>
                 </a>
+                <a href="admin" target="_self" className="nav_link">
+                  <i className="bi bi-person-check nav_icon" />
+                  <span className="nav_name">Admin</span>
+                </a>
                 <a
                   href="peserta"
                   target="_self"
@@ -111,7 +149,7 @@ export const Peserta = () => {
             </div>
             <a
               href="/"
-              target="_blank"
+              target="_self"
               className="nav_link"
             >
               <i className="bi bi-box-arrow-left nav_icon" />
@@ -119,67 +157,84 @@ export const Peserta = () => {
             </a>
           </nav>
         </div>
-        <div className="pt-4 pb-4">
-        <div className="columns mt-5">
-      <div className="column is-half">
-        <h2>Data Kehadiran</h2>
-        <div className="cards">
-          <div className="card green">
-            <p>Total Hadir Hari Ini</p>
-            <p>{totalAttendance}</p>
+        <div className="pb-4">
+          <div className="columns mt-5">
+            <div className="column">
+              <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: 25, marginBottom: 20 }}>Presensi Magang</p>
+              <div className="cards">
+                <div className="card" style={{ backgroundColor: "#4CAF50" }}>
+                  <p style={{ color: "white" }}>Total Hadir Hari Ini</p>
+                  <p style={{ color: "white" }}>{totalAttendance}</p>
+                </div>
+                <div className="card" style={{ backgroundColor: "#FF5733" }}>
+                  <p style={{ color: "white" }}>Tanggal Hari Ini</p>
+                  <p style={{ color: "white" }}>{currentTime}</p>
+                </div>
+              </div>
+              <div className="button-container">
+                <button
+                  onClick={() => getPresensiBelum()}
+                  className="button is-small is-danger"
+                >
+                  Peserta Belum Absen
+                </button>
+                <button
+                  onClick={() => getUsers()}
+                  className="button is-small is-success"
+                >
+                  Peserta Sudah Absen
+                </button>
+              </div>
+              <div className='search'>
+                <input
+                  type="date"
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                  onClick={handleSearch}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '5px',
+                    border: '1px solid #ccc',
+                    fontSize: '16px',
+                    width: '100%',
+                    maxWidth: '300px',
+                    margin: '10px 0',
+                  }}
+                />
+              </div>
+              <table className="custom-table-presensi">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Image In</th>
+                    <th>Image Out</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.isArray(users) &&
+                    users.map((user, index) => (
+                      <tr key={user.id}>
+                        <td>{index + 1}</td>
+                        <td>{user.nama}</td>
+                        <td>{user.check_in}</td>
+                        <td>{user.check_out}</td>
+                        <td>{user.image_url_in}</td>
+                        <td>{user.image_url_out}</td>
+                        <td>
+                          <Link to={`/edit/${user.id}`} className="button is-small is-info">
+                            Edit
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="card red">
-            <p>Tanggal Hari Ini</p>
-            <p>{new Date().toLocaleDateString()}</p>
-          </div>
-        </div>
-        <div className="button-container">
-          <button
-            onClick={() => getPresensiBelum()}
-            className="button is-small is-danger"
-          >
-            Peserta Belum Absen
-          </button>
-          <button
-            onClick={() => getUsers()}
-            className="button is-small is-success"
-          >
-            Peserta Sudah Absen
-          </button>
-        </div>
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nama</th>
-              <th>Check-In</th>
-              <th>Check-Out</th>
-              <th>Image In</th>
-              <th>Image Out</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(users) &&
-              users.map((user, index) => (
-                <tr key={user.id}>
-                  <td>{index + 1}</td>
-                  <td>{user.nama}</td>
-                  <td>{user.check_in}</td>
-                  <td>{user.check_out}</td>
-                  <td>{user.image_url_in}</td>
-                  <td>{user.image_url_out}</td>
-                  <td>
-                    <Link to={`/edit/${user.id}`} className="button is-small is-info">
-                      Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
         </div>
       </div>
     </div>

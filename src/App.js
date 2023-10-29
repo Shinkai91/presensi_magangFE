@@ -5,8 +5,10 @@ import Peserta from './pages/Peserta';
 import PresensiMagang from './pages/PresensiMagang';
 import Penugasan from './pages/Penugasan';
 import Statistik from './pages/Statistik';
-import EditUser from './Components/Admin/EditUser';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
+import EditUser from './Components/Admin/EditUser';
+import Admin from './pages/Admin';
+import EditAdmin from './Components/Admin/EditAdmin';
 
 const App = () => {
   return (
@@ -14,11 +16,13 @@ const App = () => {
       <Routes>
         <Route exact path="/" element={<LoginSignup />}/>
         <Route path="homepage" element={<Homepage />}/>
+        <Route path='admin' element={<Admin />} />
         <Route path='peserta' element={<Peserta />}/>
         <Route path='presensi' element={<PresensiMagang />}/>
         <Route path='penugasan' element={<Penugasan />}/>
         <Route path='statistik' element={<Statistik />}/>
-        <Route path='/edit' element={<EditUser />}/>
+        <Route path='edit/:id' element={<EditUser />}/>
+        <Route path='edit-admin/:id' element={<EditAdmin />}/>
       </Routes>
     </BrowserRouter>
   );
