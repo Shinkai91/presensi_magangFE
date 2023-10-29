@@ -6,6 +6,7 @@ import axiosJWT from "../../config/axiosJWT";
 export const EditAdmin = () => {
     const [nama, setNama] = useState("");
     const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -20,6 +21,7 @@ export const EditAdmin = () => {
             await axiosJWT.patch(`http://localhost:3000/admin/editadmin/${id}`, {
                 nama,
                 username,
+                password
             });
             navigate("/admin");
         } catch (error) {
@@ -30,13 +32,12 @@ export const EditAdmin = () => {
     const getAdminById = async () => {
         const response = await axiosJWT.get(`http://localhost:3000/admin/show-admin-id/${id}`);
         setNama(response.data.admin.nama);
-        setUsername(response.data.admin.username);
     };
 
     return (
         <div className="columns mt-5 is-centered">
             <div className="column is-half">
-                <p style={{ textAlign: "center", fontFamily: "Poppins" }}>Edit Peserta</p>
+                <p style={{ textAlign: "center", fontFamily: "Poppins" }}>Edit Admin</p>
                 <Form onSubmit={updateAdmin}>
                     <Form.Group controlId="nama">
                         <Form.Label>Nama</Form.Label>
@@ -55,6 +56,16 @@ export const EditAdmin = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="Username"
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="password">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
                         />
                     </Form.Group>
 

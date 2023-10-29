@@ -8,8 +8,10 @@ import { Button, Modal, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../Components/SideBar/Style.css";
+import { TabTitle } from "../TabName";
 
 export const Admin = () => {
+    TabTitle('Admin');
     const [admins, setAdmins] = useState([]);
     const [showNav, setShowNav] = useState(true);
     const [showTaskForm, setShowTaskForm] = useState(false);
@@ -60,6 +62,7 @@ export const Admin = () => {
             setShowTaskForm(false);
         } catch (error) {
             navigate("/");
+            console.log(error);
         }
     };
 
@@ -141,10 +144,6 @@ export const Admin = () => {
                                 <a href="penugasan" target="_self" className="nav_link">
                                     <i className="bi bi-list-task nav_icon" />
                                     <span className="nav_name">Penugasan</span>
-                                </a>
-                                <a href="statistik" target="_self" className="nav_link">
-                                    <i className="bi bi-bar-chart-line nav_icon" />
-                                    <span className="nav_name">Statistik</span>
                                 </a>
                             </div>
                         </div>

@@ -6,8 +6,10 @@ import user_icon from '../Assets/person.png';
 import password_icon from '../Assets/password.png';
 import imagelogin from '../../Assets/diskominfo.png';
 import background_login from "../Assets/login_page.jpg";
+import { TabTitle } from '../../TabName';
 
 const Login = () => {
+    TabTitle('Login');
     const [username, setUser] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
@@ -15,7 +17,7 @@ const Login = () => {
     const navigate = useNavigate('');
     useEffect(() => {
         Logout();
-      }, [])
+    }, [])
 
     const Auth = async (e) => {
         e.preventDefault();
@@ -36,11 +38,11 @@ const Login = () => {
 
     const Logout = async () => {
         try {
-          await axios.delete('http://localhost:3000/account/logout');
+            await axios.delete('http://localhost:3000/account/logout');
         } catch (error) {
-          console.log("Error during logout:", error);
+            console.log("Error during logout:", error);
         }
-      }
+    }
 
     return (
         <section className="hero is-fullheight" style={{ backgroundImage: `url(${background_login})`, backgroundSize: 'cover' }}>

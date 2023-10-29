@@ -7,14 +7,17 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "../Components/SideBar/Style.css";
 import "./Penugasan.css";
 import axiosJWT from "../config/axiosJWT";
+import { TabTitle } from "../TabName";
 
 function Penugasan() {
+  TabTitle("Penugasan");
   const [showNav, setShowNav] = useState(true);
   const [activeTasks, setActiveTasks] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeNow, setTimeNow] = useState('');
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tugas, setTugas] = useState([]);
+  const [idtugas, setIdTugas] = useState('');
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -38,13 +41,43 @@ function Penugasan() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const exportPenugasan = async (tugasId) => {
+    try {
+      if (tugasId) {
+        const response = await axiosJWT.get(
+          `http://localhost:3000/admin/tugas/${tugasId}/export-tugas`,
+          {
+            responseType: 'arraybuffer'
+          }
+        );
+        const blob = new Blob([response.data], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Penugasan.xlsx';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } else {
+        // Handle jika tugasId tidak tersedia
+        console.error('Tugas ID tidak tersedia');
+      }
+    } catch (error) {
+      // navigate('/');
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     const activeTaskCount = tugas.filter((tugas) => {
       const dueDate = new Date(tugas.dueDate);
       return dueDate > currentTime;
     }).length;
     setActiveTasks(activeTaskCount);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTime]);
 
   const fetchCurrentTime = async () => {
@@ -107,7 +140,6 @@ function Penugasan() {
       );
       setStatusTugas(response.data.tugas);
     } catch (error) {
-      // Handle errors
     }
   };
 
@@ -170,10 +202,6 @@ function Penugasan() {
                 <a href="penugasan" target="_self" className="nav_link">
                   <i className="bi bi-list-task nav_icon" />
                   <span className="nav_name">Penugasan</span>
-                </a>
-                <a href="statistik" target="_self" className="nav_link">
-                  <i className="bi bi-bar-chart-line nav_icon" />
-                  <span className="nav_name">Statistik</span>
                 </a>
               </div>
             </div>
@@ -246,7 +274,10 @@ function Penugasan() {
                         <td>{formatDueDate(tugas.dueDate)}</td>
                         <td>
                           <button
-                            onClick={() => getTugasById(tugas.id)}
+                            onClick={() => {
+                              getTugasById(tugas.id);
+                              setIdTugas(tugas.id);
+                            }}
                             className="button is-small is-danger"
                           >
                             Detail
@@ -283,6 +314,17 @@ function Penugasan() {
                     ))}
                   </tbody>
                 </table>
+                <button
+                  onClick={() => exportPenugasan(idtugas)}
+                  className="button is-success"
+                  style={{
+                    marginTop: 18,
+                    float: 'right',
+                    display: idtugas === '' ? 'none' : 'block'
+                  }}
+                >
+                  Export to Excel
+                </button>
               </div>
             </section>
           </div>

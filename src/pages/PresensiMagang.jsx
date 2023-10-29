@@ -6,8 +6,10 @@ import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
 import axiosJWT from '../config/axiosJWT';
+import { TabTitle } from '../TabName';
 
 export const Peserta = () => {
+  TabTitle('Presensi Magang');
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
   const [totalAttendance, setTotalAttendance] = useState(0);
@@ -22,19 +24,27 @@ export const Peserta = () => {
   }, []);
 
   const exportPresensi = async () => {
-    const response = await axiosJWT.get("http://localhost:3000/admin/export-presensi", {
-      responseType: 'arraybuffer'
+    const requestUrl = searchDate
+      ? `http://localhost:3000/admin/export-presensi?tanggal=${searchDate}`
+      : 'http://localhost:3000/admin/export-presensi';
+  
+    const response = await axiosJWT.get(requestUrl, {
+      responseType: 'arraybuffer',
     });
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
+  
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+  
+    const downloadUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
+    a.href = downloadUrl;
     a.download = 'Presensi.xlsx';
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
-    window.URL.revokeObjectURL(url);
-  }
+    window.URL.revokeObjectURL(downloadUrl);
+  };  
 
   const fetchCurrentTime = async () => {
     try {
@@ -151,14 +161,6 @@ export const Peserta = () => {
                 >
                   <i className="bi bi-list-task nav_icon" />
                   <span className="nav_name">Penugasan</span>
-                </a>
-                <a
-                  href="statistik"
-                  target="_self"
-                  className="nav_link"
-                >
-                  <i className="bi bi-bar-chart-line nav_icon" />
-                  <span className="nav_name">Statistik</span>
                 </a>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import axiosJWT from '../config/axiosJWT';
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Peserta.css';
 import logo from '../Assets/diskominfo.png';
@@ -9,11 +9,13 @@ import {
   Modal,
   Form,
 } from 'react-bootstrap';
-import "bootstrap/dist/css/bootstrap.css"
-import "bootstrap-icons/font/bootstrap-icons.css"
-import "../Components/SideBar/Style.css"
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "../Components/SideBar/Style.css";
+import { TabTitle } from '../TabName';
 
 export const Peserta = () => {
+  TabTitle('Peserta');
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -21,6 +23,42 @@ export const Peserta = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(20);
+  const maxPageButtons = 5;
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  const totalPages = Math.ceil(users.length / usersPerPage);
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const getRenderedPageNumbers = () => {
+    if (totalPages <= maxPageButtons) {
+      return pageNumbers;
+    }
+
+    const halfButtons = Math.floor(maxPageButtons / 2);
+    let startPage = Math.max(currentPage - halfButtons, 1);
+    let endPage = startPage + maxPageButtons - 1;
+
+    if (endPage > totalPages) {
+      endPage = totalPages;
+      startPage = Math.max(endPage - maxPageButtons + 1, 1);
+    }
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  };
 
   const [formData, setFormData] = useState({
     nama: '',
@@ -50,7 +88,7 @@ export const Peserta = () => {
     } catch (error) {
       navigate('/');
     }
-  }
+  };
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value;
@@ -67,18 +105,17 @@ export const Peserta = () => {
     }
   };
 
-
   useEffect(() => {
-    getUsers();
+    getUsers(); // Fetch data for the initial page
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getUsers = async () => {
+  const getUsers = async (page) => {
     try {
       const response = await axiosJWT.get('http://localhost:3000/admin/peserta');
       setUsers(response.data.peserta_magang);
     } catch (error) {
-      navigate("/");
+      navigate('/');
     }
   };
 
@@ -102,7 +139,6 @@ export const Peserta = () => {
     }
   };
 
-
   const handleCloseTaskForm = () => {
     setShowTaskForm(false);
   };
@@ -110,6 +146,8 @@ export const Peserta = () => {
   const handleShowTaskForm = () => {
     setShowTaskForm(true);
   };
+
+  const renderedPageNumbers = getRenderedPageNumbers();
 
   return (
     <div className="body-main">
@@ -179,14 +217,6 @@ export const Peserta = () => {
                   <i className="bi bi-list-task nav_icon" />
                   <span className="nav_name">Penugasan</span>
                 </a>
-                <a
-                  href="statistik"
-                  target="_self"
-                  className="nav_link"
-                >
-                  <i className="bi bi-bar-chart-line nav_icon" />
-                  <span className="nav_name">Statistik</span>
-                </a>
               </div>
             </div>
             <a
@@ -247,7 +277,7 @@ export const Peserta = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user, index) => (
+                  {currentUsers.map((user, index) => (
                     <tr key={user.id}>
                       <td>{index + 1}</td>
                       <td>{user.nama}</td>
@@ -264,6 +294,36 @@ export const Peserta = () => {
                   ))}
                 </tbody>
               </table>
+              <div className="pagination-peserta" style={{ marginTop: 10 }}>
+                <ul className="pagination-list-peserta">
+                  <li className="pagination-item">
+                    <button
+                      onClick={() => paginate(currentPage - 1)}
+                      className={`pagination-link ${currentPage === 1 ? 'is-disabled' : ''}`}
+                    >
+                      Previous
+                    </button>
+                  </li>
+                  {renderedPageNumbers.map((number) => (
+                    <li key={number} className="pagination-item">
+                      <button
+                        onClick={() => paginate(number)}
+                        className={`pagination-link ${number === currentPage ? 'is-current' : ''}`}
+                      >
+                        {number}
+                      </button>
+                    </li>
+                  ))}
+                  <li className="pagination-item">
+                    <button
+                      onClick={() => paginate(currentPage + 1)}
+                      className={`pagination-link ${currentPage === totalPages ? 'is-disabled' : ''}`}
+                    >
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </div>
               <button onClick={exportPeserta} className="button is-success" style={{ marginTop: 18, float: 'right' }}>
                 Export to Excel
               </button>

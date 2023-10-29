@@ -4,7 +4,6 @@ import Homepage from './pages/Homepage';
 import Peserta from './pages/Peserta';
 import PresensiMagang from './pages/PresensiMagang';
 import Penugasan from './pages/Penugasan';
-import Statistik from './pages/Statistik';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
 import EditUser from './Components/Admin/EditUser';
 import Admin from './pages/Admin';
@@ -20,7 +19,6 @@ const App = () => {
         <Route path='peserta' element={<Peserta />}/>
         <Route path='presensi' element={<PresensiMagang />}/>
         <Route path='penugasan' element={<Penugasan />}/>
-        <Route path='statistik' element={<Statistik />}/>
         <Route path='edit/:id' element={<EditUser />}/>
         <Route path='edit-admin/:id' element={<EditAdmin />}/>
       </Routes>

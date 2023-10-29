@@ -48,7 +48,6 @@ export const EditUser = () => {
         setSelesai(response.data.peserta_magang.tanggal_selesai);
         setStatusAktif(response.data.peserta_magang.status_aktif);
         setUsername(response.data.peserta_magang.username);
-        setPassword(response.data.peserta_magang.password);
     };
 
     return (
@@ -109,6 +108,26 @@ export const EditUser = () => {
                             <option value={true}>Aktif</option>
                             <option value={false}>Tidak Aktif</option>
                         </Form.Control>
+                    </Form.Group>
+
+                    <Form.Group controlId="username">
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Username"
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="password">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Password"
+                        />
                     </Form.Group>
 
                     <Button style={{ marginTop: 10 }} variant="success" type="submit">
