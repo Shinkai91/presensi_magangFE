@@ -9,46 +9,43 @@ import axios from 'axios';
 import jwt_decode from "jwt-decode"
 
 
+function formatDueDate(inputDate) {
+  const date = new Date(inputDate);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  return hours+':'+minutes;
+}
+
 function Data(props) {
   const [data, setData] = useState([]);
-  const [Id, setID] = useState([]);
+  // const [Id, setID] = useState([]);
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDataAndPresensiData = async () => {
       try {
         const ambilid = await axios.get('http://localhost:3000/account/token');
         const decoded = jwt_decode(ambilid.data.token);
-        setID(decoded.userId);
+
+        // Fetch presensi data after fetching ID
+        const response = await axiosJWT.get(`http://localhost:3000/user/presensi/${decoded.userId}`);
+        const dataWithKosong = response.data.presensi.map((item) => ({
+          ...item,
+          check_in: item.check_in === null ? <span style={{color:"red"}}>Belum absen</span> : formatDueDate(item.check_in),
+          check_out: item.check_out === null ? <span style={{color:"red"}}>Belum absen</span> : formatDueDate(item.check_out),
+          image_url_in: item.image_url_in === null ? <span style={{color:"red"}}>Belum absen</span> : <span style={{color:"green"}}>Sudah absen</span>,
+          image_url_out: item.image_url_out === null ? <span style={{color:"red"}}>Belum absen</span> : <span style={{color:"green"}}>Sudah absen</span>,
+        }));
+        setData(dataWithKosong);
+        
       } catch (error) {
-        console.error('Error fetching id:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchData();
-  }, []); // Empty dependency array to run only once after the component mounts
-
-  useEffect(() => {
-    const fetchPresensiData = async () => {
-      try {
-        if (Id) {
-          const response = await axiosJWT.get(`http://localhost:3000/user/presensi/${Id}`);
-          const dataWithKosong = response.data.presensi.map((item) => ({
-            ...item,
-            check_in: item.check_in === null ? "Belum absen" : item.check_in,
-            check_out: item.check_out === null ? "Belum absen" : item.check_out,
-            image_url_in: item.image_url_in === null ? "Belum absen" : item.image_url_in,
-            image_url_out: item.image_url_out === null ? "Belum absen" : item.image_url_out,
-          }));
-          setData(dataWithKosong);
-        }
-      } catch (error) {
-        console.error('Error fetching presensi data:', error);
-      }
-    };
-
-    fetchPresensiData();
-  }, [Id]);
+    fetchDataAndPresensiData();
+  }, []);
 
   return (
     <div className="body-main">

@@ -21,3 +21,23 @@ table {
     background-color: #797979;
     color: white;
   }
+  .table-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .table-content {
+    flex: 1;
+    margin-right: 20px; /* Margin antara tabel dan gambar */
+  }
+  
+  .image-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .check-image {
+    width: 100px; /* Sesuaikan lebar gambar sesuai kebutuhan */
+    height: auto; /* Atur tinggi gambar sesuai kebutuhan */
+  }
+  

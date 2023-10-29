@@ -8,16 +8,32 @@ import logo from "../../Assets/diskominfo.png"
 import penugasan from "../../Assets/image_Penugasan.svg"
 import data from "../../Assets/image_Data Presensi.svg"
 import presensi from "../../Assets/image_Lakukan Presensi.svg"
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../../Components/SideBar/Navbar.css"
 import './UserPages.css'
+import axiosJWT from "../../config/axiosJWT"
 
 
 const UserPages = () => {
   const [nama, setNama] = useState('');
+  const [username, setuserName] = useState('');
   const navigate = useNavigate();
   const [showNav, setShowNav] = useState(true);
+  const [show, setShow] = useState(false);
+  const handleClose = () => {setShow(false); setErrorMessage('')};
+  const handleShow = () => setShow(true);
+  const [Password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [formData, setFormData] = useState( {password:""});
+  // const formData = {
+  //   password: Password
+  // };
+
 
   useEffect(() => {
     refreshToken();
@@ -28,6 +44,7 @@ const UserPages = () => {
       const response = await axios.get('http://localhost:3000/account/token');
       const decoded = jwt_decode(response.data.token);
       setNama(decoded.nama);
+      setuserName(decoded.username);
   
     } catch (error) {
       if (error.response) {
@@ -35,7 +52,30 @@ const UserPages = () => {
       }
     }
   }
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (Password !== confirmPassword) {
+      setErrorMessage('Password tidak sama, silahkan isi kembali');
+    } else {
+      // setFormData(Password)
+      uploadPassword();
+      console.log(formData);
+      handleClose();
+    }
+  };
 
+  const uploadPassword = async () => {
+    try {
+      const ambilid = await axios.get('http://localhost:3000/account/token');
+      const decoded = jwt_decode(ambilid.data.token);
+      
+      const response = await axiosJWT.patch(`http://localhost:3000/user/peserta/${decoded.userId}/edit`, formData);
+      console.log('Server Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return (
     <div className="body-main">
@@ -121,7 +161,9 @@ const UserPages = () => {
               <div className="info-box">
                 <div className="user-info">
                   <p>Selamat Datang,</p>
-                  <p>{nama} </p>
+                  <p>{nama}</p>
+                  <p style={{fontSize:"15px", marginTop:"5px", borderTop:"1px solid #000000"}}>username : {username}</p>
+                  <p variant="primary" onClick={handleShow} style={{fontSize:"15px",color:"#0000aa", textDecoration:"underline", cursor:"pointer"}}>Edit password</p>
                 </div>
               </div>
               <div className='space'></div>
@@ -146,6 +188,46 @@ const UserPages = () => {
           </div>
         </div>
       </div>
+      <Modal show={show} onHide={handleClose} centered={true} >
+        <Modal.Header closeButton>
+          <Modal.Title>Change Password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formPassword">
+              <Form.Label>New Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter new password"
+                value={Password}
+                onChange={(e) => {setPassword(e.target.value); 
+                  setFormData({ ...formData, password: (e.target.value) })
+                }}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formConfirmPassword">
+              <Form.Label>Confirm New Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+            {errorMessage && <p className="text-danger">{errorMessage}</p>}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

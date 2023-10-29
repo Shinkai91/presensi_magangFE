@@ -5,6 +5,9 @@ import Dates from '../../Assets/Date';
 import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../../Components/SideBar/Navbar.css"
+import jwt_decode from "jwt-decode"
+import axiosJWT from '../../config/axiosJWT';
+import axios from 'axios';
 
 const Presensi = () => {
   const videoRef = useRef(null);
@@ -35,37 +38,41 @@ const Presensi = () => {
     };
   }, []); // Empty dependency array ensures that this effect runs once when the component mounts
 
-  const capture = () => {
+  const capture = async () => {
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d'); 
     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-    const capturedImage = canvas.toDataURL('image/jpeg');
-    setImageSrc(capturedImage);
+    const capturedImageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+    const capturedImageFile = new File([capturedImageBlob], 'captured-image.jpg', { type: 'image/jpeg' });
+
+    // Set the captured image as a File object in state
+    setImageSrc(capturedImageFile);
     setCaptureTime(new Date());
-    console.log('Data Gambar:', capturedImage);
+    console.log('Captured Image:', capturedImageFile);
   };
 
-  const uploadImage = () => {
-    // Gunakan fetch atau library Axios untuk mengirim data gambar ke endpoint server
-    // Contoh:
-    // fetch('http://alamat-server/upload', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ image: imageSrc }),
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   console.log('Response dari server:', data);
-    // })
-    // .catch(error => {
-    //   console.error('Error:', error);
-    // });
-  };
+  const uploadImage = async () => {
+    try {
+      const ambilid = await axios.get('http://localhost:3000/account/token');
+      const decoded = jwt_decode(ambilid.data.token);
 
+      // Create a FormData object to send the image as multipart/form-data
+      const formData = new FormData();
+      formData.append('image', imageSrc);
+
+      const response = await axiosJWT.patch(`http://localhost:3000/user/presensi/${decoded.userId}/up`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Set content type to multipart/form-data
+        }
+      });
+      console.log('Server Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
   return (
     <div className="body-main">
       <div className={`body-area${showNav ? " body-pd" : ""}`}>
@@ -148,7 +155,7 @@ const Presensi = () => {
           <Container style={{ marginTop: 10, display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
               <video ref={videoRef} autoPlay style={{ width: '50%', height: '60%' }} />
-              {imageSrc && <img src={imageSrc} alt="Selfie" style={{ width: '50%', height: '60%' , marginLeft:"10px" }} />}
+              {imageSrc && <img src={URL.createObjectURL(imageSrc)} alt="Selfie" style={{ width: '50%', height: '60%' , marginLeft:"10px" }} />}
             </div>
             <div style={{ display: 'flex', marginTop: 10 }}>
               <button onClick={capture} style={{ height: "40px", width: "100px", borderRadius: "10px" }}>Ambil Foto</button>

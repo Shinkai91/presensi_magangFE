@@ -13,34 +13,25 @@ import axios from 'axios';
 function Tugas() {
   const [showNav, setShowNav] = useState(true);
   const [cardData, setData] = useState([]);
-  const [id, setID] = useState([]);
+  // const [id, setID] = useState([]);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const ambilid = await axios.get('http://localhost:3000/account/token');
         const decoded = jwt_decode(ambilid.data.token);
-        setID(decoded.userId);
-      } catch (error) {
-        console.error('Error fetching id:', error);
-      }
-    };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosJWT.get(`http://localhost:3000/user/tugas-list/${id}`);
-        setData(response.data.stugas);
+        const response = await axiosJWT.get(`http://localhost:3000/user/tugas-list/${decoded.userId}`);
+        setData(response.data.tugas);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, []);
 
   return (
     <div className="body-main">
@@ -122,8 +113,8 @@ function Tugas() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }} > <Dates /> </div>
           <h1 style={{ marginBottom: "16px" }} >Tugas</h1>
           <div className="card-list">
-            {cardData.map((card, data) => (
-              <Cards key={data.id} data={card} />
+            {cardData.map((card) => (
+              <Cards key={card.id} data={card} />
             ))}
           </div>
         </div>
