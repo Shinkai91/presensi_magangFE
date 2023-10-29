@@ -30,11 +30,6 @@ function ListTable(props) {
           </tbody>
         </table>
       </div>
-      <div className="image-container">
-{/*         
-          <img src={"http://localhost:3000/uploads/1698568897322"+".jpg"} alt="Check-in" className="check-image" />
-   */}
-      </div>
     </div>
   );
 }

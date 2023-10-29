@@ -6,20 +6,24 @@ import "bootstrap/dist/css/bootstrap.css"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "../../Components/SideBar/Navbar.css"
 import axios from 'axios';
-import jwt_decode from "jwt-decode"
+import jwt_decode from "jwt-decode";
 
+// Import a modal library or create your custom modal component
+// For this example, I'm using a custom modal component.
+import ImageModal from './ImageModal'; // Create this component
 
 function formatDueDate(inputDate) {
   const date = new Date(inputDate);
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   
-  return hours+':'+minutes;
+  return hours + ':' + minutes;
 }
 
 function Data(props) {
   const [data, setData] = useState([]);
-  // const [Id, setID] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
   const [showNav, setShowNav] = useState(true);
 
   useEffect(() => {
@@ -28,14 +32,37 @@ function Data(props) {
         const ambilid = await axios.get('http://localhost:3000/account/token');
         const decoded = jwt_decode(ambilid.data.token);
 
-        // Fetch presensi data after fetching ID
         const response = await axiosJWT.get(`http://localhost:3000/user/presensi/${decoded.userId}`);
         const dataWithKosong = response.data.presensi.map((item) => ({
           ...item,
-          check_in: item.check_in === null ? <span style={{color:"red"}}>Belum absen</span> : formatDueDate(item.check_in),
-          check_out: item.check_out === null ? <span style={{color:"red"}}>Belum absen</span> : formatDueDate(item.check_out),
-          image_url_in: item.image_url_in === null ? <span style={{color:"red"}}>Belum absen</span> : <span style={{color:"green"}}>Sudah absen</span>,
-          image_url_out: item.image_url_out === null ? <span style={{color:"red"}}>Belum absen</span> : <span style={{color:"green"}}>Sudah absen</span>,
+          check_in: item.check_in === null ? (
+            <span style={{ color: "red" }}>Belum Presensi</span>
+          ) : (
+            <span style={{ color: "blue", cursor: "pointer" }} onClick={() => handleImageClick(item.image_url_in)}>
+              {formatDueDate(item.check_in)}
+            </span>
+          ),
+          check_out: item.check_out === null ? (
+            <span style={{ color: "red" }}>Belum Presensi</span>
+          ) : (
+            <span style={{ color: "blue", cursor: "pointer" }} onClick={() => handleImageClick(item.image_url_out)}>
+              {formatDueDate(item.check_out)}
+            </span>
+          ),
+          image_url_in: item.image_url_in === null ? (
+            <span style={{ color: "red" }}>Belum Presensi</span>
+          ) : (
+            <span style={{ color: "blue", cursor: "pointer" }} onClick={() => handleImageClick(item.image_url_in)}>
+              Sudah Presensi
+            </span>
+          ),
+          image_url_out: item.image_url_out === null ? (
+            <span style={{ color: "red" }}>Belum Presensi</span>
+          ) : (
+            <span style={{ color: "blue", cursor: "pointer" }} onClick={() => handleImageClick(item.image_url_out)}>
+              Sudah Presensi
+            </span>
+          ),
         }));
         setData(dataWithKosong);
         
@@ -46,6 +73,15 @@ function Data(props) {
 
     fetchDataAndPresensiData();
   }, []);
+
+  function handleImageClick(imageUrl) {
+    setSelectedImage(imageUrl);
+    setShowImageModal(true);
+  }
+
+  function closeImageModal() {
+    setShowImageModal(false);
+  }
 
   return (
     <div className="body-main">
@@ -128,7 +164,9 @@ function Data(props) {
           <ListTable data={data} />
         </div>
 
-        
+        {showImageModal && (
+          <ImageModal imageUrl={selectedImage} onClose={closeImageModal} />
+        )}
       </div>
     </div>
   );
