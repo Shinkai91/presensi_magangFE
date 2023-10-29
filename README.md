@@ -4,8 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ### `Project Manager : Ibnu Fadhil`
 ### Front End dev : 
-### -Yosia Acer
+### -Yosia Aser
 ### -M. Asroruddin
+### Back End dev : 
+### -Bintang Prayoga
+### -Jawaar
 
 ## Available Scripts
 
