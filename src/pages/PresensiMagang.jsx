@@ -21,6 +21,21 @@ export const Peserta = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const exportPresensi = async () => {
+    const response = await axiosJWT.get("http://localhost:3000/admin/export-presensi", {
+      responseType: 'arraybuffer'
+    });
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Presensi.xlsx';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   const fetchCurrentTime = async () => {
     try {
       const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Jakarta');
@@ -110,7 +125,7 @@ export const Peserta = () => {
                   <span className="nav_name">Home</span>
                 </a>
                 <a href="admin" target="_self" className="nav_link">
-                  <i className="bi bi-person-check nav_icon" />
+                  <i className="bi bi-person-check-fill nav_icon" />
                   <span className="nav_name">Admin</span>
                 </a>
                 <a
@@ -233,6 +248,9 @@ export const Peserta = () => {
                     ))}
                 </tbody>
               </table>
+              <button onClick={exportPresensi} className="button is-success" style={{ marginTop: 18, float: 'right' }}>
+                Export to Excel
+              </button>
             </div>
           </div>
         </div>

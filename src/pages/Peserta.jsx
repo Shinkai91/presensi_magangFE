@@ -33,21 +33,36 @@ export const Peserta = () => {
     password: '',
   });
 
+  const exportPeserta = async () => {
+    try {
+      const response = await axiosJWT.get("http://localhost:3000/admin/export-peserta", {
+        responseType: 'arraybuffer'
+      });
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Peserta.xlsx';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      navigate('/');
+    }
+  }
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value;
-    setSearchTerm(searchTerm); // Menyimpan nilai pencarian dalam state
+    setSearchTerm(searchTerm);
     if (searchTerm === '') {
-      // Jika input pencarian dikosongkan, kembalikan ke daftar peserta asli
-      getUsers(); // Ambil daftar peserta asli kembali
+      getUsers();
     } else {
-      // Filter users based on the search term
       const filteredUsers = users.filter((user) => {
         const lowercaseSearchTerm = searchTerm.toLowerCase();
         const lowercaseUserName = user.nama.toLowerCase();
         return lowercaseUserName.includes(lowercaseSearchTerm);
       });
-      // Update the state with filtered users
       setUsers(filteredUsers);
     }
   };
@@ -137,7 +152,7 @@ export const Peserta = () => {
                   <span className="nav_name">Home</span>
                 </a>
                 <a href="admin" target="_self" className="nav_link">
-                  <i className="bi bi-person-check nav_icon" />
+                  <i className="bi bi-person-check-fill nav_icon" />
                   <span className="nav_name">Admin</span>
                 </a>
                 <a
@@ -249,6 +264,9 @@ export const Peserta = () => {
                   ))}
                 </tbody>
               </table>
+              <button onClick={exportPeserta} className="button is-success" style={{ marginTop: 18, float: 'right' }}>
+                Export to Excel
+              </button>
             </div>
           </div>
         </div>

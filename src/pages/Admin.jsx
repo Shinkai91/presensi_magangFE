@@ -63,6 +63,25 @@ export const Admin = () => {
         }
     };
 
+    const exportAdmin = async () => {
+        try {
+            const response = await axiosJWT.get("http://localhost:3000/admin/export-admin", {
+                responseType: 'arraybuffer'
+            });
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Admins.xlsx';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            navigate('/');
+        }
+    }
+
     const handleCloseTaskForm = () => {
         setShowTaskForm(false);
     };
@@ -108,7 +127,7 @@ export const Admin = () => {
                                     <span className="nav_name">Home</span>
                                 </a>
                                 <a href="admin" target="_self" className="nav_link">
-                                    <i className="bi bi-person-check nav_icon" />
+                                    <i className="bi bi-person-check-fill nav_icon" />
                                     <span className="nav_name">Admin</span>
                                 </a>
                                 <a href="peserta" target="_self" className="nav_link">
@@ -230,6 +249,7 @@ export const Admin = () => {
                                     ))}
                                 </tbody>
                             </table>
+                            <button onClick={exportAdmin} className="button is-success" style={{ marginTop: 18, float: 'right' }}>Export to Excel</button>
                         </div>
                     </div>
                 </div>

@@ -48,7 +48,7 @@ export const Statistik = () => {
                   <span className="nav_name">Home</span>
                 </a>
                 <a href="admin" target="_self" className="nav_link">
-                  <i className="bi bi-person-check nav_icon" />
+                  <i className="bi bi-person-check-fill nav_icon" />
                   <span className="nav_name">Admin</span>
                 </a>
                 <a
