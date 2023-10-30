@@ -57,6 +57,7 @@ const Cards = ({ data }) => {
       const response = await axiosJWT.patch(`http://localhost:3000/user/tugas/${decoded.userId}/submit/${selectedTaskID}`, formData);
       console.log('Server Response:', response.data);
       window.alert("Berhasil Submit Gambar")
+      handleCloseModal()
     } catch (error) {
       console.error('Error:', error);
       window.alert("Gagal Submit Gambar")
