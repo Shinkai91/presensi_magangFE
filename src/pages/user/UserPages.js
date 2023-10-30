@@ -61,6 +61,7 @@ const UserPages = () => {
       // setFormData(Password)
       uploadPassword();
       console.log(formData);
+      
       handleClose();
     }
   };
@@ -72,6 +73,7 @@ const UserPages = () => {
       
       const response = await axiosJWT.patch(`http://localhost:3000/user/peserta/${decoded.userId}/edit`, formData);
       console.log('Server Response:', response.data);
+      window.alert("Berhasil menggati password")
     } catch (error) {
       console.error('Error:', error);
     }

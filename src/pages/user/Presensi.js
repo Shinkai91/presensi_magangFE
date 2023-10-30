@@ -68,11 +68,13 @@ const Presensi = () => {
         }
       });
       console.log('Server Response:', response.data);
+      window.alert("Berhasil Melakukan Presensi")
     } catch (error) {
       console.error('Error:', error);
+      window.alert("Gagal Melakukan Presensi")
     }
   };
-  
+
   return (
     <div className="body-main">
       <div className={`body-area${showNav ? " body-pd" : ""}`}>

@@ -1,5 +1,9 @@
 import './card.css';
 import React, { useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import axiosJWT from '../config/axiosJWT';
+import axios from 'axios';
+import jwt_decode from "jwt-decode"
 
 const Cards = ({ data }) => {
   const colors = [
@@ -25,6 +29,12 @@ const Cards = ({ data }) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedTaskID, setSelectedTaskID] = useState(null);
+  const [file, setFile] = useState()
+
+  function hadleFile(event) {
+    setFile(event.target.files[0])
+    console.log(event.target.files[0])
+  }
 
   const handleCardClick = (taskID) => {
     setSelectedTaskID(taskID);
@@ -35,6 +45,23 @@ const Cards = ({ data }) => {
     setSelectedTaskID(null);
     setModalOpen(false);
   };
+
+  const uploadFile = async () => {
+    try {
+      const ambilid = await axios.get('http://localhost:3000/account/token');
+      const decoded = jwt_decode(ambilid.data.token);
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await axiosJWT.patch(`http://localhost:3000/user/tugas/${decoded.userId}/submit/${selectedTaskID}`, formData);
+      console.log('Server Response:', response.data);
+      window.alert("Berhasil Submit Gambar")
+    } catch (error) {
+      console.error('Error:', error);
+      window.alert("Gagal Submit Gambar")
+    }
+  }
 
   return (
     <div className="card" style={{ maxWidth: '300px' }}>
@@ -54,7 +81,13 @@ const Cards = ({ data }) => {
             <span className="close" onClick={handleCloseModal}>
               &times;
             </span>
-            <p>Task ID: {selectedTaskID}</p>
+            <h2 style={{ textAlign: "center", borderBottom: "1px solid #000000", fontSize: "20px" }}>Submit untuk Tugas {selectedTaskID}</h2>
+            <div style={{ height: "100px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <input type='file' name='image' accept="image/jpeg, image/png" onChange={hadleFile} />
+            </div>
+            <Button variant="primary" onClick={uploadFile}>
+              Save Changes
+            </Button>
           </div>
         </div>
       )}
