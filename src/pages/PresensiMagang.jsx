@@ -47,7 +47,7 @@ export const Peserta = () => {
 
   const fetchCurrentTime = async () => {
     try {
-      const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Jakarta');
+      const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta');
       const data = await response.json();
       const dateTimeString = data.datetime;
       const dateTime = new Date(dateTimeString);
