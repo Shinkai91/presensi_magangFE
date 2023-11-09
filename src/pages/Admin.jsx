@@ -1,14 +1,15 @@
-import axiosJWT from "../config/axiosJWT";
-import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./Peserta.css";
-import logo from "../Assets/diskominfo.png";
-import { Button, Modal, Form } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from '../Assets/diskominfo.png';
+import './Adminstyle.css';
+import { Button, Modal, Form } from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "../Components/SideBar/Style.css";
-import { TabTitle } from "../TabName";
+import { TabTitle } from '../TabName';
+import axiosJWT from '../config/axiosJWT';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import EditAdmin from '../Components/Admin/EditAdmin';
 
 export const Admin = () => {
     TabTitle('Admin');
@@ -19,52 +20,97 @@ export const Admin = () => {
 
     const [searchTerm, setSearchTerm] = useState("");
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [adminsPerPage] = useState(20);
+    const maxPageButtons = 5;
+
+    const [editingAdminId, setEditingAdminId] = useState(null);
+    const [showEditAdminModal, setShowEditAdminModal] = useState(false);
+
+    const indexOfLastAdmin = currentPage * adminsPerPage;
+    const indexOfFirstAdmin = indexOfLastAdmin - adminsPerPage;
+
+    const totalPages = Math.ceil(admins.length / adminsPerPage);
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
+
+    const paginate = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
+    const getRenderedPageNumbers = () => {
+        if (totalPages <= maxPageButtons) {
+            return pageNumbers;
+        }
+
+        const halfButtons = Math.floor(maxPageButtons / 2);
+        let startPage = Math.max(currentPage - halfButtons, 1);
+        let endPage = startPage + maxPageButtons - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(endPage - maxPageButtons + 1, 1);
+        }
+
+        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+    };
+
+    const handleOpenEditAdminModal = (adminId) => {
+        setEditingAdminId(adminId);
+        setShowEditAdminModal(true);
+    };
+
     const [formData, setFormData] = useState({
         nama: "",
         username: "",
         password: "",
     });
+    
+    const handleCloseModal = () => {
+        setEditingAdminId(null);
+        setShowEditAdminModal(false);
+    };
+
+    const showSuccessNotification = (message) => {
+        toast.success(message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+        });
+    };
+
+    const showErrorNotification = (message) => {
+        toast.error(message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+        });
+    };
 
     const handleSearch = (e) => {
-        const searchTerm = e.target.value;
-        setSearchTerm(searchTerm);
-        if (searchTerm === "") {
-            getAdmin();
-        } else {
-            const filteredUsers = admins.filter((user) => {
-                const lowercaseSearchTerm = searchTerm.toLowerCase();
-                const lowercaseUserName = user.nama.toLowerCase();
-                return lowercaseUserName.includes(lowercaseSearchTerm);
-            });
-            setAdmins(filteredUsers);
-        }
+        setSearchTerm(e.target.value);
     };
+
+    const handleCloseTaskForm = () => {
+        setShowTaskForm(false);
+    };
+
+    const handleShowTaskForm = () => {
+        setShowTaskForm(true);
+    };
+
+    const filteredAdmins = admins.filter(admin =>
+        admin.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
         getAdmin();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const getAdmin = async () => {
-        try {
-            const response = await axiosJWT.get('http://localhost:3000/admin/show-admin');
-            setAdmins(response.data.admin);
-        } catch (error) {
-            navigate("/");
-        }
-    };
-
-    const saveAdmin = async (e) => {
-        e.preventDefault();
-        try {
-            await axiosJWT.post("http://localhost:3000/admin/add-admin", formData);
-            getAdmin();
-            setShowTaskForm(false);
-        } catch (error) {
-            navigate("/");
-            console.log(error);
-        }
-    };
 
     const exportAdmin = async () => {
         try {
@@ -85,13 +131,38 @@ export const Admin = () => {
         }
     }
 
-    const handleCloseTaskForm = () => {
-        setShowTaskForm(false);
+    const getAdmin = async () => {
+        try {
+            const response = await axiosJWT.get('http://localhost:3000/admin/show-admin');
+            setAdmins(response.data.admin);
+        } catch (error) {
+            navigate('/');
+        }
     };
 
-    const handleShowTaskForm = () => {
-        setShowTaskForm(true);
+    const updateAdminData = (updatedAdminData) => {
+        setAdmins((prevAdmins) =>
+            prevAdmins.map((admin) =>
+                admin.id === updatedAdminData.id ? updatedAdminData : admin
+            )
+        );
     };
+
+    const saveAdmin = async (e) => {
+        e.preventDefault();
+        try {
+            await axiosJWT.post("http://localhost:3000/admin/add-admin", formData);
+            getAdmin();
+            setShowTaskForm(false);
+            showSuccessNotification("Pengguna berhasil ditambahkan.");
+        } catch (error) {
+            navigate("/");
+            showErrorNotification("Gagal menambahkan pengguna.");
+            console.log(error);
+        }
+    };
+
+    const displayedAdmins = filteredAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin);
 
     return (
         <div className="body-main">
@@ -106,7 +177,7 @@ export const Admin = () => {
                     <div className="header_img">
                         <img
                             src="https://reqres.in/img/faces/5-image.jpg"
-                            alt="Clue Mediator"
+                            alt=""
                         />
                     </div>
                 </header>
@@ -114,15 +185,13 @@ export const Admin = () => {
                     <nav className="nav">
                         <div>
                             <a href="/homepage" target="_self" className="nav_logo">
-                                {showNav ? (
-                                    <img
-                                        src={logo}
-                                        alt=""
-                                        style={{ width: "150px", height: "auto" }}
-                                    />
-                                ) : (
-                                    <i className="bi bi-border-width nav_logo-icon" />
-                                )}
+                                <div className="header_toggle">
+                                    {showNav && window.innerWidth > 768 ? (
+                                        <img src={logo} alt="" style={{ width: '150px', height: 'auto' }} />
+                                    ) : (
+                                        <i className="bi bi-border-width nav_logo-icon" />
+                                    )}
+                                </div>
                             </a>
                             <div className="nav_list">
                                 <a href="homepage" target="_self" className="nav_link">
@@ -156,40 +225,14 @@ export const Admin = () => {
                 <div className="pb-4">
                     <div className="columns mt-5">
                         <div className="column">
-                            <div
-                                className="info-admin-magang"
-                                style={{ display: "flex", justifyContent: "space-between" }}
-                            >
-                                <p
-                                    style={{
-                                        fontFamily: "Poppins, sans-serif",
-                                        fontSize: 25,
-                                        marginBottom: 20,
-                                    }}
-                                >
-                                    Admin
-                                </p>
-                                <p
-                                    style={{
-                                        fontFamily: "Poppins, sans-serif",
-                                        fontSize: 18,
-                                        marginBottom: 20,
-                                        border: "1px solid #000",
-                                        padding: "10px",
-                                        borderRadius: "5px",
-                                    }}
-                                >
-                                    Jumlah Admin: {admins.length} Admin
-                                </p>
+                            <div className="info-admin-magang" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <p style={{ fontFamily: "Poppins, sans-serif", fontSize: 25, marginBottom: 20 }}>Admin</p>
+                                <p className='count-admin' style={{ textAlign: 'center' }}>Jumlah Admin: {searchTerm === "" ? admins.length : filteredAdmins.length} Admin</p>
                             </div>
-                            <div
-                                className="search-peserta"
-                                style={{ display: "flex", justifyContent: "space-between" }}
-                            >
+                            <div className="search-peserta" style={{ display: "flex", justifyContent: "space-between" }}>
                                 <button
                                     onClick={handleShowTaskForm}
                                     className="button is-success"
-                                    style={{ marginTop: 18 }}
                                 >
                                     Tambah Admin
                                 </button>
@@ -198,7 +241,6 @@ export const Admin = () => {
                                         type="text"
                                         placeholder="Cari Admin..."
                                         onChange={handleSearch}
-                                        value={searchTerm}
                                         style={{
                                             padding: "10px",
                                             borderRadius: "5px",
@@ -209,56 +251,83 @@ export const Admin = () => {
                                             margin: "10px 0",
                                         }}
                                     />
-                                    <i
-                                        className="bi bi-search"
-                                        style={{
-                                            position: "absolute",
-                                            right: "10px",
-                                            top: "50%",
-                                            transform: "translateY(-50%)",
-                                        }}
-                                    ></i>
+                                    <i className="bi bi-search" style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)" }}></i>
                                 </div>
                             </div>
-                            <table className="custom-table">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Nama</th>
-                                        <th>Username</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {admins.map((admin, index) => (
-                                        <tr key={admin.id}>
-                                            <td>{index + 1}</td>
-                                            <td>{admin.nama}</td>
-                                            <td>{admin.username}</td>
-                                            <td>
-                                                <Link
-                                                    to={`/edit-admin/${admin.id}`}
-                                                    className="button is-small is-info"
-                                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                                                >
-                                                    Edit
-                                                </Link>
-                                            </td>
+                            <div className='table-container'>
+                                <table className="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>Username</th>
+                                            <th>Actions</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        {displayedAdmins.map((admin, index) => (
+                                            <tr key={admin.id}>
+                                                <td>{index + 1}</td>
+                                                <td>{admin.nama}</td>
+                                                <td>{admin.username}</td>
+                                                <td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                                    <button
+                                                        className="button is-small is-info"
+                                                        onClick={() => handleOpenEditAdminModal(admin.id)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <EditAdmin adminId={editingAdminId} handleCloseModal={handleCloseModal} showEditAdminModal={showEditAdminModal} updateAdminData={updateAdminData} />
+                            </div>
+                            <div className="pagination-admin" style={{ marginTop: 10 }}>
+                                <ul className="pagination-list-admin">
+                                    <li className="pagination-item">
+                                        <button
+                                            onClick={() => paginate(currentPage - 1)}
+                                            className={`pagination-link ${currentPage === 1 ? 'is-disabled' : ''}`}
+                                        >
+                                            Previous
+                                        </button>
+                                    </li>
+                                    {getRenderedPageNumbers().map((number) => (
+                                        <li key={number} className="pagination-item">
+                                            <button
+                                                onClick={() => paginate(number)}
+                                                className={`pagination-link ${number === currentPage ? 'is-current' : ''}`}
+                                            >
+                                                {number}
+                                            </button>
+                                        </li>
                                     ))}
-                                </tbody>
-                            </table>
-                            <button onClick={exportAdmin} className="button is-success" style={{ marginTop: 18, float: 'right' }}>Export to Excel</button>
+                                    <li className="pagination-item">
+                                        <button
+                                            onClick={() => paginate(currentPage + 1)}
+                                            className={`pagination-link ${currentPage === totalPages ? 'is-disabled' : ''}`}
+                                        >
+                                            Next
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <button onClick={exportAdmin} className="export-button button is-success">Export to Excel</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <EditAdmin adminId={editingAdminId} />
 
             <Modal
                 show={showTaskForm}
                 onHide={handleCloseTaskForm}
                 backdrop="static"
                 style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
+                dialogClassName="modal-dialog-centered"
             >
                 <Modal.Header closeButton>
                     <Modal.Title>Tambah Admin</Modal.Title>
@@ -311,7 +380,7 @@ export const Admin = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </div >
+        </div>
     );
 };
 

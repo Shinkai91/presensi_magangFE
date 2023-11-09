@@ -87,3 +87,10 @@
 .button.is-danger:hover {
     opacity: 0.8;
 }
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

@@ -1,84 +1,109 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 import axiosJWT from "../../config/axiosJWT";
 
-export const EditAdmin = () => {
-    const [nama, setNama] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-    const { id } = useParams();
+const EditAdmin = ({ adminId, handleCloseModal, showEditAdminModal, updateAdminData }) => {
+    const [adminData, setAdminData] = useState({
+        id: null,
+        nama: "",
+        username: "",
+        password: "",
+    });
 
     useEffect(() => {
         getAdminById();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [adminId]);
 
     const updateAdmin = async (e) => {
         e.preventDefault();
         try {
-            await axiosJWT.patch(`http://localhost:3000/admin/editadmin/${id}`, {
-                nama,
-                username,
-                password
+            await axiosJWT.patch(`http://localhost:3000/admin/edit-admin/${adminId}`, {
+                nama: adminData.nama,
+                username: adminData.username,
+                password: adminData.password
             });
-            navigate("/admin");
+            handleCloseModal()
+            updateAdminData(adminData);
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
     const getAdminById = async () => {
-        const response = await axiosJWT.get(`http://localhost:3000/admin/show-admin-id/${id}`);
-        setNama(response.data.admin.nama);
+        try {
+            const response = await axiosJWT.get(`http://localhost:3000/admin/show-admin-id/${adminId}`);
+            if (response.data) {
+                if (response.data.admin) {
+                    const admin = response.data.admin;
+                    setAdminData({
+                        id: admin.id,
+                        nama: admin.nama,
+                        username: admin.username
+                    });
+                } else {
+                    console.error("Admin data is missing in the response.");
+                }
+            } else {
+                console.error("Response data is missing.");
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
-        <div className="columns mt-5 is-centered">
-            <div className="column is-half">
-                <p style={{ textAlign: "center", fontFamily: "Poppins" }}>Edit Admin</p>
-                <Form onSubmit={updateAdmin}>
-                    <Form.Group controlId="nama">
-                        <Form.Label>Nama</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={nama}
-                            onChange={(e) => setNama(e.target.value)}
-                            placeholder="Nama"
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="username">
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Username"
-                        />
-                    </Form.Group>
-
-                    <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                        />
-                    </Form.Group>
-
-                    <Button style={{ marginTop: 10 }} variant="success" type="submit">
+        <div>
+            <Modal
+                show={showEditAdminModal}
+                onHide={handleCloseModal}
+                backdrop="static"
+                style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
+                dialogClassName="modal-dialog-centered"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Admin</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={updateAdmin}>
+                        <Form.Group controlId="nama">
+                            <Form.Label>Nama</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={adminData.nama}
+                                onChange={(e) => setAdminData({ ...adminData, nama: e.target.value })}
+                                placeholder="Nama"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="username">
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={adminData.username}
+                                onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
+                                placeholder="Username"
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="password">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={adminData.password}
+                                onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
+                                placeholder="Password"
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="success" type="submit" onClick={updateAdmin}>
                         Update
                     </Button>
-
-                    <Button style={{ marginTop: 10, marginLeft: 10 }} variant="secondary" onClick={() => navigate("/admin")}>
+                    <Button variant="secondary" onClick={handleCloseModal}>
                         Cancel
                     </Button>
-
-                </Form>
-            </div>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

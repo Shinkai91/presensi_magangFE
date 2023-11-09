@@ -7,7 +7,7 @@ import "../Components/SideBar/Style.css"
 import axiosJWT from '../config/axiosJWT';
 import { TabTitle } from '../TabName';
 
-export const Peserta = () => {
+export const PresensiMagang = () => {
   TabTitle('Presensi Magang');
   const [users, setUsers] = useState([]);
   const [showNav, setShowNav] = useState(true);
@@ -15,12 +15,25 @@ export const Peserta = () => {
 
   const [currentTime, setCurrentTime] = useState('');
   const [searchDate, setSearchDate] = useState('');
+  const [loading, setLoading] = useState(true); // Add a loading state
 
   useEffect(() => {
     getUsers();
     fetchCurrentTime();
+    const today = new Date().toISOString().slice(0, 10);
+    setSearchDate(today);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setSearchDate(selectedDate);
+  };
+
+  useEffect(() => {
+    getUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchDate]);
 
   const exportPresensi = async () => {
     const requestUrl = searchDate
@@ -65,8 +78,8 @@ export const Peserta = () => {
     }
   };
 
-
   const getUsers = async () => {
+    setLoading(true);
     const url = searchDate
       ? `http://localhost:3000/admin/presensi?tanggal=${searchDate}`
       : 'http://localhost:3000/admin/presensi';
@@ -77,11 +90,9 @@ export const Peserta = () => {
       setTotalAttendance(response.data.totalSudahPresensi);
     } catch (error) {
       console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleSearch = () => {
-    getUsers();
   };
 
   const getPresensiBelum = async () => {
@@ -95,7 +106,7 @@ export const Peserta = () => {
 
   const formatDateTime = (dateTime) => {
     if (dateTime === null) {
-      return '-'; // Display "-" for null values
+      return '-';
     }
 
     const jakartaTimeZone = 'Asia/Jakarta';
@@ -104,7 +115,7 @@ export const Peserta = () => {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false, // Use 24-hour format
+      hour12: false,
     };
 
     const date = new Date(dateTime);
@@ -208,16 +219,10 @@ export const Peserta = () => {
                 </div>
               </div>
               <div className="button-container">
-                <button
-                  onClick={() => getPresensiBelum()}
-                  className="button is-small is-danger"
-                >
+                <button onClick={() => getPresensiBelum()} className="button is-small is-danger">
                   Peserta Belum Absen
                 </button>
-                <button
-                  onClick={() => getUsers()}
-                  className="button is-small is-success"
-                >
+                <button onClick={() => getUsers()} className="button is-small is-success">
                   Peserta Sudah Absen
                 </button>
               </div>
@@ -225,8 +230,7 @@ export const Peserta = () => {
                 <input
                   type="date"
                   value={searchDate}
-                  onChange={(e) => setSearchDate(e.target.value)}
-                  onClick={handleSearch}
+                  onChange={handleDateChange}
                   style={{
                     padding: '10px',
                     borderRadius: '5px',
@@ -238,46 +242,50 @@ export const Peserta = () => {
                   }}
                 />
               </div>
-              <table className="custom-table-presensi">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Check-In</th>
-                    <th>Check-Out</th>
-                    <th>Image In</th>
-                    <th>Image Out</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.isArray(users) && users.map((user, index) => (
-                    <tr key={user.id}>
-                      <td>{index + 1}</td>
-                      <td>{user.nama}</td>
-                      {user.presensimagang.map((entry, entryIndex) => (
-                        <React.Fragment key={entry.id}>
-                          <td>{entry.check_in ? formatDateTime(entry.check_in) : '-'}</td>
-                          <td>{entry.check_out ? formatDateTime(entry.check_out) : '-'}</td>
-                          <td>
-                            {entry.image_url_in ? (
-                              <a href={entry.image_url_in} target="_self" rel="noopener noreferrer">
-                                Absen Masuk
-                              </a>
-                            ) : '-'}
-                          </td>
-                          <td>
-                            {entry.image_url_out ? (
-                              <a href={entry.image_url_out} target="_self" rel="noopener noreferrer">
-                                Absen Pulang
-                              </a>
-                            ) : '-'}
-                          </td>
-                        </React.Fragment>
-                      ))}
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <table className="custom-table-presensi">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama</th>
+                      <th>Check-In</th>
+                      <th>Check-Out</th>
+                      <th>Image In</th>
+                      <th>Image Out</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(users) && users.map((user, index) => (
+                      <tr key={user.id}>
+                        <td>{index + 1}</td>
+                        <td>{user.nama}</td>
+                        {user.presensimagang.map((entry, entryIndex) => (
+                          <React.Fragment key={entry.id}>
+                            <td>{entry.check_in ? formatDateTime(entry.check_in) : '-'}</td>
+                            <td>{entry.check_out ? formatDateTime(entry.check_out) : '-'}</td>
+                            <td>
+                              {entry.image_url_in ? (
+                                <a href={entry.image_url_in} target="_self" rel="noopener noreferrer">
+                                  Absen Masuk
+                                </a>
+                              ) : '-'}
+                            </td>
+                            <td>
+                              {entry.image_url_out ? (
+                                <a href={entry.image_url_out} target="_self" rel="noopener noreferrer">
+                                  Absen Pulang
+                                </a>
+                              ) : '-'}
+                            </td>
+                          </React.Fragment>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
               <button onClick={exportPresensi} className="button is-success" style={{ marginTop: 18, float: 'right' }}>
                 Export to Excel
               </button>
@@ -289,4 +297,4 @@ export const Peserta = () => {
   );
 };
 
-export default Peserta;
+export default PresensiMagang;
