@@ -9,7 +9,7 @@ import "./Penugasan.css";
 import axiosJWT from "../config/axiosJWT";
 import { TabTitle } from "../TabName";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const Penugasan = () => {
