@@ -329,7 +329,7 @@ export const Penugasan = () => {
                                     setSelectedItemIndex(index);
                                     setShowImageOverlay(true);
                                   }}
-                                  className="button is-small is-danger"
+                                  className="button is-small is-success"
                                 >
                                   Sudah Mengerjakan
                                 </button>
@@ -343,7 +343,7 @@ export const Penugasan = () => {
                                         setSelectedItemIndex(selectedItemIndex);
                                         setShowImageOverlay(true);
                                       }}
-                                      className="button is-small is-danger"
+                                      className="button is-small is-success"
                                     >
                                       Lihat Gambar
                                     </button>
