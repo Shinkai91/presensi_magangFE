@@ -8,8 +8,11 @@ import "../Components/SideBar/Style.css";
 import "./Penugasan.css";
 import axiosJWT from "../config/axiosJWT";
 import { TabTitle } from "../TabName";
+import ImageOverlay from "../Components/Admin/ImageOverlay";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function Penugasan() {
+export const Penugasan = () => {
   TabTitle("Penugasan");
   const [showNav, setShowNav] = useState(true);
   const [activeTasks, setActiveTasks] = useState(0);
@@ -19,6 +22,11 @@ function Penugasan() {
   const [tugas, setTugas] = useState([]);
   const [idtugas, setIdTugas] = useState('');
   const navigate = useNavigate();
+
+  const [showImageOverlay, setShowImageOverlay] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState('');
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+
 
   const [formData, setFormData] = useState({
     judul: "",
@@ -117,10 +125,11 @@ function Penugasan() {
       await axiosJWT.post("http://localhost:3000/admin/tugas/add", formData);
       getTugas();
       setShowTaskForm(false);
+      toast.success("Tugas berhasil ditambahkan!", { position: "top-right" });
     } catch (error) {
       navigate("/");
     }
-  };
+  };  
 
   const getTugas = async () => {
     try {
@@ -133,13 +142,16 @@ function Penugasan() {
 
   const [statustugas, setStatusTugas] = useState([]);
 
-  const getTugasById = async (taskId) => {
+  const getTugasById = async (taskId, index) => {
     try {
       const response = await axiosJWT.get(
         `http://localhost:3000/admin/tugas/${taskId}`
       );
       setStatusTugas(response.data.tugas);
+      setIdTugas(taskId);
+      setSelectedItemIndex(index);
     } catch (error) {
+      navigate("/");
     }
   };
 
@@ -172,15 +184,17 @@ function Penugasan() {
           <nav className="nav">
             <div>
               <a href="/homepage" target="_self" className="nav_logo">
-                {showNav ? (
-                  <img
-                    src={logo}
-                    alt=""
-                    style={{ width: "150px", height: "auto" }}
-                  />
-                ) : (
-                  <i className="bi bi-border-width nav_logo-icon" />
-                )}
+                <div className="header_toggle">
+                  {showNav && window.innerWidth > 768 ? (
+                    <img
+                      src={logo}
+                      alt=""
+                      style={{ width: "150px", height: "auto" }}
+                    />
+                  ) : (
+                    <i className="bi bi-border-width nav_logo-icon" />
+                  )}
+                </div>
               </a>
               <div className="nav_list">
                 <a href="homepage" target="_self" className="nav_link">
@@ -225,7 +239,7 @@ function Penugasan() {
               >
                 Penugasan
               </p>
-              <div className="card" style={{ backgroundColor: "red" }}>
+              <div className="card-waktu" style={{ backgroundColor: "red", display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center" }}>
                 <p style={{ color: "white" }}>Tanggal Hari Ini</p>
                 <p style={{ color: "white" }}>{timeNow}</p>
               </div>
@@ -236,10 +250,10 @@ function Penugasan() {
               </div>
               <div
                 className="card-penugasan-1 red-penugasan"
-                style={{ display: "flex", alignItems: "center" }}
+                style={{ marginTop: 10, cursor: "pointer" }}
+                onClick={handleShowTaskForm}
               >
                 <button
-                  onClick={handleShowTaskForm}
                   style={{
                     backgroundColor: "red",
                     border: "none",
@@ -255,90 +269,115 @@ function Penugasan() {
                 <p style={{ textAlign: "center", fontFamily: "Poppins, sans-serif", fontSize: 20, color: "black", marginBottom: 10 }}>
                   Daftar Tugas
                 </p>
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Judul</th>
-                      <th>Deskripsi</th>
-                      <th>Deadline</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tugas.map((tugas, index) => (
-                      <tr key={tugas.id}>
-                        <td>{index + 1}</td>
-                        <td>{tugas.judul}</td>
-                        <td>{tugas.tugas_url}</td>
-                        <td>{formatDueDate(tugas.dueDate)}</td>
-                        <td>
-                          <button
-                            onClick={() => {
-                              getTugasById(tugas.id);
-                              setIdTugas(tugas.id);
-                            }}
-                            className="button is-small is-danger"
-                          >
-                            Detail
-                          </button>
-                        </td>
+                <div className='table-container-penugasan'>
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Judul</th>
+                        <th>Deskripsi</th>
+                        <th>Deadline</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {tugas.map((tugas, index) => (
+                        <tr key={tugas.id}>
+                          <td>{index + 1}</td>
+                          <td>{tugas.judul}</td>
+                          <td>{tugas.tugas_url}</td>
+                          <td>{formatDueDate(tugas.dueDate)}</td>
+                          <td>
+                            <button
+                              onClick={() => {
+                                getTugasById(tugas.id, index); // Pass the task ID and index
+                              }}
+                              className="button is-small is-danger"
+                            >
+                              Detail
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
               <div className="container-penugasan right">
                 <p style={{ textAlign: "center", fontFamily: "Poppins, sans-serif", fontSize: 20, color: "black", marginBottom: 10 }}>
                   Detail Penugasan
                 </p>
-                <table className="custom-table">
-                  <thead>
-                    <tr>
-                      <th>Nama</th>
-                      <th>Tugas URL</th>
-                      <th>Status Pengerjaan</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {statustugas.map((tugas, index) => (
-                      <tr key={tugas.id}>
-                        <td>{tugas.nama}</td>
-                        <td>
-                          {tugas.status_tugas[0] && tugas.status_tugas[0].status_pengerjaan ? (
-                            <a href={tugas.status_tugas[0].tugas_url} target="_self" rel="noopener noreferrer">
-                              Sudah Mengerjakan
-                            </a>
-                          ) : (
-                            tugas.status_tugas[0] && tugas.status_tugas[0].tugas_url ? (
-                              <a href={tugas.status_tugas[0].tugas_url} target="_self" rel="noopener noreferrer">
-                                {tugas.status_tugas[0].tugas_url}
-                              </a>
-                            ) : (
-                              "Belum Mengerjakan"
-                            )
-                          )}
-                        </td>
-                        <td>
-                          {tugas.status_tugas[0] && tugas.status_tugas[0].status_pengerjaan
-                            ? "Sudah Selesai"
-                            : "Belum Selesai"}
-                        </td>
+                <div className="table-container-penugasan">
+                  <table className="custom-table">
+                    <thead>
+                      <tr>
+                        <th>Nama</th>
+                        <th>Tugas URL</th>
+                        <th>Status Pengerjaan</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <button
-                  onClick={() => exportPenugasan(idtugas)}
-                  className="button is-success"
-                  style={{
-                    marginTop: 18,
-                    float: 'right',
-                    display: idtugas === '' ? 'none' : 'block'
-                  }}
-                >
-                  Export to Excel
-                </button>
+                    </thead>
+                    <tbody>
+                      {statustugas.map((tugas, index) => (
+                        <tr key={tugas.id}>
+                          <td>{tugas.nama}</td>
+                          <td>
+                            {tugas.status_tugas && tugas.status_tugas[0] && tugas.status_tugas[0].status_pengerjaan
+                              ? (
+                                <button
+                                  onClick={() => {
+                                    setSelectedImageUrl(tugas.status_tugas[0].tugas_url);
+                                    setSelectedItemIndex(index);
+                                    setShowImageOverlay(true);
+                                  }}
+                                  className="button is-small is-danger"
+                                >
+                                  Sudah Mengerjakan
+                                </button>
+                              )
+                              : (
+                                tugas.status_tugas && tugas.status_tugas[0] && tugas.status_tugas[0].tugas_url
+                                  ? (
+                                    <button
+                                      onClick={() => {
+                                        setSelectedImageUrl(tugas.status_tugas[0].tugas_url);
+                                        setSelectedItemIndex(selectedItemIndex);
+                                        setShowImageOverlay(true);
+                                      }}
+                                      className="button is-small is-danger"
+                                    >
+                                      Lihat Gambar
+                                    </button>
+                                  )
+                                  : "Belum Mengerjakan"
+                              )}
+                          </td>
+                          <td>
+                            {tugas.status_tugas ? (
+                              tugas.status_tugas[0] && tugas.status_tugas[0].status_pengerjaan
+                                ? "Sudah Selesai"
+                                : "Belum Selesai"
+                            ) : "Belum Selesai"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {showImageOverlay && (
+                    <ImageOverlay imageUrl={selectedImageUrl} onClose={() => setShowImageOverlay(false)} />
+                  )}
+                  <button
+                    onClick={() => exportPenugasan(idtugas)}
+                    className="button is-success"
+                    style={{
+                      marginTop: 18,
+                      float: 'right',
+                      display: idtugas ? 'block' : 'none'
+                    }}
+                  >
+                    Export to Excel
+                  </button>
+
+                </div>
               </div>
             </section>
           </div>
@@ -350,6 +389,7 @@ function Penugasan() {
         onHide={handleCloseTaskForm}
         backdrop="static"
         style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1050 }}
+        dialogClassName="modal-dialog-centered"
       >
         <Modal.Header closeButton>
           <Modal.Title>Form Penugasan</Modal.Title>

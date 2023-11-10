@@ -270,7 +270,7 @@ export const Admin = () => {
                                                 <td>{index + 1}</td>
                                                 <td>{admin.nama}</td>
                                                 <td>{admin.username}</td>
-                                                <td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                                <td>
                                                     <button
                                                         className="button is-small is-info"
                                                         onClick={() => handleOpenEditAdminModal(admin.id)}

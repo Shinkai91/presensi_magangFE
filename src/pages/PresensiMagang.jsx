@@ -6,6 +6,7 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 import "../Components/SideBar/Style.css"
 import axiosJWT from '../config/axiosJWT';
 import { TabTitle } from '../TabName';
+import ImageOverlay from '../Components/Admin/ImageOverlay';
 
 export const PresensiMagang = () => {
   TabTitle('Presensi Magang');
@@ -15,7 +16,21 @@ export const PresensiMagang = () => {
 
   const [currentTime, setCurrentTime] = useState('');
   const [searchDate, setSearchDate] = useState('');
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
+
+
+  const [showImageOverlay, setShowImageOverlay] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setShowImageOverlay(true);
+  };
+
+  const handleCloseImageOverlay = () => {
+    setSelectedImage('');
+    setShowImageOverlay(false);
+  };
 
   useEffect(() => {
     getUsers();
@@ -149,11 +164,17 @@ export const PresensiMagang = () => {
                 target="_self"
                 className="nav_logo"
               >
-                {showNav ? (
-                  <img src={logo} alt="" style={{ width: '150px', height: 'auto' }} />
-                ) : (
-                  <i className="bi bi-border-width nav_logo-icon" />
-                )}
+                <div className="header_toggle">
+                  {showNav && window.innerWidth > 768 ? (
+                    <img
+                      src={logo}
+                      alt=""
+                      style={{ width: "150px", height: "auto" }}
+                    />
+                  ) : (
+                    <i className="bi bi-border-width nav_logo-icon" />
+                  )}
+                </div>
               </a>
               <div className="nav_list">
                 <a
@@ -209,11 +230,11 @@ export const PresensiMagang = () => {
             <div className="column">
               <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: 25, marginBottom: 20 }}>Presensi Magang</p>
               <div className="cards">
-                <div className="card" style={{ backgroundColor: "#4CAF50" }}>
+                <div className="card-1" style={{ backgroundColor: "#4CAF50", display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center" }}>
                   <p style={{ color: "white" }}>Total Hadir Hari Ini</p>
                   <p style={{ color: "white" }}>{totalAttendance}</p>
                 </div>
-                <div className="card" style={{ backgroundColor: "#FF5733" }}>
+                <div className="card-2" style={{ backgroundColor: "#FF5733", display: "flex", flexDirection: "column", justifyContent: "center", textAlign: "center" }}>
                   <p style={{ color: "white" }}>Tanggal Hari Ini</p>
                   <p style={{ color: "white" }}>{currentTime}</p>
                 </div>
@@ -245,46 +266,57 @@ export const PresensiMagang = () => {
               {loading ? (
                 <p>Loading...</p>
               ) : (
-                <table className="custom-table-presensi">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Nama</th>
-                      <th>Check-In</th>
-                      <th>Check-Out</th>
-                      <th>Image In</th>
-                      <th>Image Out</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(users) && users.map((user, index) => (
-                      <tr key={user.id}>
-                        <td>{index + 1}</td>
-                        <td>{user.nama}</td>
-                        {user.presensimagang.map((entry, entryIndex) => (
-                          <React.Fragment key={entry.id}>
-                            <td>{entry.check_in ? formatDateTime(entry.check_in) : '-'}</td>
-                            <td>{entry.check_out ? formatDateTime(entry.check_out) : '-'}</td>
-                            <td>
-                              {entry.image_url_in ? (
-                                <a href={entry.image_url_in} target="_self" rel="noopener noreferrer">
-                                  Absen Masuk
-                                </a>
-                              ) : '-'}
-                            </td>
-                            <td>
-                              {entry.image_url_out ? (
-                                <a href={entry.image_url_out} target="_self" rel="noopener noreferrer">
-                                  Absen Pulang
-                                </a>
-                              ) : '-'}
-                            </td>
-                          </React.Fragment>
-                        ))}
+                <div className='table-container-presensi'>
+                  <table className="custom-table-presensi">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Image In</th>
+                        <th>Image Out</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(users) && users.map((user, index) => (
+                        <tr key={user.id}>
+                          <td>{index + 1}</td>
+                          <td>{user.nama}</td>
+                          {user.presensimagang.map((entry, entryIndex) => (
+                            <React.Fragment key={entry.id}>
+                              <td>{entry.check_in ? formatDateTime(entry.check_in) : '-'}</td>
+                              <td>{entry.check_out ? formatDateTime(entry.check_out) : '-'}</td>
+                              <td>
+                                {entry.image_url_in ? (
+                                  <button
+                                    onClick={() => handleImageClick(entry.image_url_in)}
+                                    className="image-button"
+                                  >
+                                    Absen Masuk
+                                  </button>
+                                ) : '-'}
+                              </td>
+                              <td>
+                                {entry.image_url_out ? (
+                                  <button
+                                    onClick={() => handleImageClick(entry.image_url_out)}
+                                    className="image-button"
+                                  >
+                                    Absen Pulang
+                                  </button>
+                                ) : '-'}
+                              </td>
+                            </React.Fragment>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {showImageOverlay && (
+                <ImageOverlay imageUrl={selectedImage} onClose={handleCloseImageOverlay} />
               )}
               <button onClick={exportPresensi} className="button is-success" style={{ marginTop: 18, float: 'right' }}>
                 Export to Excel

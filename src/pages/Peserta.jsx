@@ -1,7 +1,6 @@
 import axiosJWT from "../config/axiosJWT";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import logo from "../Assets/diskominfo.png";
 import "./Peserta.css";
 import { Button, Modal, Form, Table } from "react-bootstrap";
@@ -11,6 +10,7 @@ import "../Components/SideBar/Style.css";
 import { TabTitle } from "../TabName";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditUser from "../Components/Admin/EditUser";
 
 export const Peserta = () => {
   TabTitle("Peserta");
@@ -31,6 +31,19 @@ export const Peserta = () => {
   const [showPresensiModal, setShowPresensiModal] = useState(false);
   const [selectedPesertaId, setSelectedPesertaId] = useState(null);
   const [selectedPesertaName, setSelectedPesertaName] = useState("");
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+
+  const [editingUserId, setEditingUserId] = useState(null);
+
+
+  const handleOpenEditUserModal = (userId) => {
+    setEditingUserId(userId);
+    setShowEditUserModal(true);
+  };
+
+  const handleCloseUserModal = () => {
+    setShowEditUserModal(false);
+  };
 
   const getPresensiPeserta = async (id) => {
     try {
@@ -47,7 +60,7 @@ export const Peserta = () => {
       navigate("/");
       console.error(error);
     }
-  };  
+  };
 
   const handleShowPresensiModal = (id) => {
     setSelectedPesertaId(id);
@@ -57,7 +70,17 @@ export const Peserta = () => {
 
   const handleClosePresensiModal = () => {
     setShowPresensiModal(false);
-  }; 
+  };
+
+  const updateUser = (updatedUser) => {
+    const updatedUsers = users.map((user) => {
+      if (user.id === updatedUser.id) {
+        return updatedUser;
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
+  };
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -140,13 +163,13 @@ export const Peserta = () => {
       const response = await axiosJWT.get(
         `http://localhost:3000/admin/${endpoint}`
       );
-      setUsers(response.data.peserta_magang);
+      setUsers(response.data.peserta_magang); // Mengisi state users
       setActiveCategory(category); // Update the active category
     } catch (error) {
       navigate("/");
       console.log(error);
     }
-  };
+  };  
 
   const exportPeserta = async () => {
     try {
@@ -273,16 +296,17 @@ export const Peserta = () => {
   );
 
   useEffect(() => {
-    setIsLoading(true); // Atur isLoading ke true saat permintaan HTTP dimulai
+    setIsLoading(true);
     getUsers("all")
       .then(() => {
-        setIsLoading(false); // Atur isLoading ke false saat data diterima
+        setIsLoading(false);
       })
       .catch(() => {
-        setIsLoading(false); // Atur isLoading ke false jika ada kesalahan
+        setIsLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const deleteUser = async (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) {
@@ -355,10 +379,7 @@ export const Peserta = () => {
             />
           </div>
           <div className="header_img">
-            <img
-              src="https://reqres.in/img/faces/5-image.jpg"
-              alt="Clue Mediator"
-            />
+            <img src="https://reqres.in/img/faces/5-image.jpg" alt="" />
           </div>
         </header>
         <div className={`l-navbar${showNav ? " show" : ""}`}>
@@ -367,7 +388,11 @@ export const Peserta = () => {
               <a href="/homepage" target="_self" className="nav_logo">
                 <div className="header_toggle">
                   {showNav && window.innerWidth > 768 ? (
-                    <img src={logo} alt="" style={{ width: '150px', height: 'auto' }} />
+                    <img
+                      src={logo}
+                      alt=""
+                      style={{ width: "150px", height: "auto" }}
+                    />
                   ) : (
                     <i className="bi bi-border-width nav_logo-icon" />
                   )}
@@ -418,9 +443,7 @@ export const Peserta = () => {
                 >
                   Peserta
                 </p>
-                <p className="count-peserta"
-                  style={{ textAlign: "center" }}
-                >
+                <p className="count-peserta" style={{ textAlign: "center" }}>
                   Jumlah Peserta:{" "}
                   {searchTerm === "" ? users.length : filteredUsers.length}{" "}
                   Peserta
@@ -466,31 +489,35 @@ export const Peserta = () => {
               <div className="category-buttons">
                 <button
                   onClick={() => getUsers("all")}
-                  className={`button is-danger ${activeCategory === "all" ? "active" : ""}`}
+                  className={`button is-danger ${activeCategory === "all" ? "active" : ""
+                    }`}
                 >
                   Semua Peserta
                 </button>
                 <button
                   onClick={() => getUsers("aktif")}
-                  className={`button is-danger ${activeCategory === "aktif" ? "active" : ""}`}
+                  className={`button is-danger ${activeCategory === "aktif" ? "active" : ""
+                    }`}
                 >
                   Peserta Aktif
                 </button>
                 <button
                   onClick={() => getUsers("alumni")}
-                  className={`button is-danger ${activeCategory === "alumni" ? "active" : ""}`}
+                  className={`button is-danger ${activeCategory === "alumni" ? "active" : ""
+                    }`}
                 >
                   Peserta Alumni
                 </button>
                 <button
                   onClick={() => getUsers("calon")}
-                  className={`button is-danger ${activeCategory === "calon" ? "active" : ""}`}
+                  className={`button is-danger ${activeCategory === "calon" ? "active" : ""
+                    }`}
                 >
                   Peserta Calon
                 </button>
               </div>
-              <div className="table-container">
-                <table className="custom-table">
+              <div className="table-container-peserta">
+                <table className="custom-table-peserta">
                   <thead>
                     <tr>
                       <th>No</th>
@@ -524,17 +551,17 @@ export const Peserta = () => {
                           <td>{user.asal_jurusan}</td>
                           <td>{user.tanggal_mulai}</td>
                           <td>{user.tanggal_selesai}</td>
+                          <td>{user.status_aktif ? "Aktif" : "Tidak Aktif"}</td>
                           <td>
-                            {user.status_aktif ? "Aktif" : "Tidak Aktif"}
-                          </td>
-                          <td>
-                            <Link
-                              to={`/edit/${user.id}`}
+                            <button
                               className="button is-small is-info"
+                              style={{ minWidth: "60px" }}
+                              onClick={() => handleOpenEditUserModal(user.id)}
                             >
                               Edit
-                            </Link>
+                            </button>
                             <button
+                              style={{ minWidth: "60px" }}
                               onClick={() => deleteUser(user.id)}
                               className="button is-small is-danger"
                             >
@@ -546,6 +573,12 @@ export const Peserta = () => {
                     )}
                   </tbody>
                 </table>
+                <EditUser
+                userId={editingUserId}
+                handleCloseModal={() => handleCloseUserModal()}
+                showEditUserModal={showEditUserModal}
+                updateUserData={updateUser}
+              />
               </div>
               <div className="pagination-peserta">
                 <ul className="pagination-list-peserta">
