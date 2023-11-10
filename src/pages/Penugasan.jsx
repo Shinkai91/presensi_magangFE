@@ -11,6 +11,7 @@ import { TabTitle } from "../TabName";
 import ImageOverlay from "../Components/Admin/ImageOverlay";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import icon from "../Assets/icon.png"
 
 export const Penugasan = () => {
   TabTitle("Penugasan");
@@ -175,8 +176,8 @@ export const Penugasan = () => {
           </div>
           <div className="header_img">
             <img
-              src="https://reqres.in/img/faces/5-image.jpg"
-              alt="Clue Mediator"
+              src={icon}
+              alt=""
             />
           </div>
         </header>

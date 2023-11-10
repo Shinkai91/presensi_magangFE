@@ -11,6 +11,7 @@ import { TabTitle } from "../TabName";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditUser from "../Components/Admin/EditUser";
+import icon from "../Assets/icon.png"
 
 export const Peserta = () => {
   TabTitle("Peserta");
@@ -379,7 +380,7 @@ export const Peserta = () => {
             />
           </div>
           <div className="header_img">
-            <img src="https://reqres.in/img/faces/5-image.jpg" alt="" />
+            <img src={icon} alt="" />
           </div>
         </header>
         <div className={`l-navbar${showNav ? " show" : ""}`}>

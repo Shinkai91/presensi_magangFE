@@ -7,6 +7,7 @@ import "../Components/SideBar/Style.css"
 import axiosJWT from '../config/axiosJWT';
 import { TabTitle } from '../TabName';
 import ImageOverlay from '../Components/Admin/ImageOverlay';
+import icon from "../Assets/icon.png"
 
 export const PresensiMagang = () => {
   TabTitle('Presensi Magang');
@@ -151,7 +152,7 @@ export const PresensiMagang = () => {
           </div>
           <div className="header_img">
             <img
-              src="https://reqres.in/img/faces/5-image.jpg"
+              src={icon}
               alt="Clue Mediator"
             />
           </div>

@@ -10,6 +10,7 @@ import axiosJWT from '../config/axiosJWT';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditAdmin from '../Components/Admin/EditAdmin';
+import icon from "../Assets/icon.png"
 
 export const Admin = () => {
     TabTitle('Admin');
@@ -69,7 +70,7 @@ export const Admin = () => {
         username: "",
         password: "",
     });
-    
+
     const handleCloseModal = () => {
         setEditingAdminId(null);
         setShowEditAdminModal(false);
@@ -176,7 +177,7 @@ export const Admin = () => {
                     </div>
                     <div className="header_img">
                         <img
-                            src="https://reqres.in/img/faces/5-image.jpg"
+                            src={icon}
                             alt=""
                         />
                     </div>
